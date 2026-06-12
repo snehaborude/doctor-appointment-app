@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, User, UserCircle, ArrowRight, Loader2 } from 'lucide-react';
+import './Register.css';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -34,30 +35,15 @@ const Register = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: 'calc(100vh - var(--header-height))',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'radial-gradient(circle at top right, rgba(67, 97, 238, 0.05), transparent), radial-gradient(circle at bottom left, rgba(181, 23, 158, 0.05), transparent)',
-      padding: '40px 20px'
-    }}>
-      <div className="glass-card animate-fade-in" style={{ padding: '40px', width: '100%', maxWidth: '480px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '8px' }}>Create Account</h2>
-          <p style={{ color: 'var(--text-muted)' }}>Join thousands of patients and doctors</p>
+    <div className="registerPage">
+      <div className="registerCard">
+        <div className="registerHeader">
+          <h2 className="registerTitle">Create Account</h2>
+          <p className="registerSubtitle">Join thousands of patients and doctors</p>
         </div>
 
         {error && (
-          <div style={{ 
-            padding: '12px', 
-            background: 'rgba(239, 68, 68, 0.1)', 
-            color: '#ef4444', 
-            borderRadius: '12px', 
-            marginBottom: '20px',
-            fontSize: '0.9rem',
-            textAlign: 'center'
-          }}>
+          <div className="errorBox">
             {error}
           </div>
         )}
@@ -65,14 +51,13 @@ const Register = () => {
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label className="input-label">Full Name</label>
-            <div style={{ position: 'relative' }}>
-              <User size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <div className="relative inputFieldFocus">
+              <User size={18} className="inputIcon" />
               <input 
                 type="text" 
                 name="name"
-                className="input-field" 
+                className="inputFieldWithIcon" 
                 placeholder="John Doe"
-                style={{ paddingLeft: '44px' }}
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -82,14 +67,13 @@ const Register = () => {
 
           <div className="input-group">
             <label className="input-label">Email Address</label>
-            <div style={{ position: 'relative' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <div className="relative inputFieldFocus">
+              <Mail size={18} className="inputIcon" />
               <input 
                 type="email" 
                 name="email"
-                className="input-field" 
+                className="inputFieldWithIcon" 
                 placeholder="name@example.com"
-                style={{ paddingLeft: '44px' }}
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -99,12 +83,11 @@ const Register = () => {
 
           <div className="input-group">
             <label className="input-label">I am a...</label>
-            <div style={{ position: 'relative' }}>
-              <UserCircle size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <div className="relative inputFieldFocus">
+              <UserCircle size={18} className="inputIcon" />
               <select 
                 name="role"
-                className="input-field" 
-                style={{ paddingLeft: '44px', appearance: 'none' }}
+                className="inputFieldWithIcon appearance-none" 
                 value={formData.role}
                 onChange={handleChange}
               >
@@ -114,16 +97,15 @@ const Register = () => {
             </div>
           </div>
 
-          <div className="input-group" style={{ marginBottom: '32px' }}>
+          <div className="input-group mb-8">
             <label className="input-label">Password</label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <div className="relative inputFieldFocus">
+              <Lock size={18} className="inputIcon" />
               <input 
                 type="password" 
                 name="password"
-                className="input-field" 
+                className="inputFieldWithIcon" 
                 placeholder="••••••••"
-                style={{ paddingLeft: '44px' }}
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -131,15 +113,15 @@ const Register = () => {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px' }} disabled={isSubmitting}>
+          <button type="submit" className="submitBtn" disabled={isSubmitting}>
              {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (
               <>Create Account <ArrowRight size={20} /></>
             )}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '24px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign In</Link>
+        <p className="registerFooter">
+          Already have an account? <Link to="/login" className="registerLink">Sign In</Link>
         </p>
       </div>
     </div>

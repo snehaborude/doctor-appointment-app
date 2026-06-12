@@ -1,12 +1,25 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, LogOut, Menu, X, Heart } from 'lucide-react';
-import { useState } from 'react';
+import { LogOut, Menu, X, Heart, Sun, Moon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Theme state
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   const handleLogout = () => {
     logout();
@@ -14,59 +27,85 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="glass-card" style={{ 
-      position: 'sticky', 
-      top: 0, 
-      zIndex: 1000, 
-      borderRadius: 0, 
-      borderTop: 'none',
-      borderLeft: 'none',
-      borderRight: 'none'
-    }}>
-      <div className="container" style={{ 
-        height: 'var(--header-height)', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between' 
-      }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ 
-            background: 'var(--primary)', 
-            padding: '8px', 
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(67, 97, 238, 0.2)'
-          }}>
-            <Heart size={24} color="white" fill="white" />
+    <nav className="navbar">
+      <div className="navbarWrapper">
+        <Link to="/" className="logo">
+          <div className="logoIcon">
+            <Heart size={22} color="white" fill="white" />
           </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
-            Doc<span style={{ color: 'var(--primary)' }}>Reserv</span>
+          <span className="logoText">
+            Doc<span className="logoHighlight">Reserv</span>
           </span>
         </Link>
 
         {/* Desktop Menu */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }} className="nav-menu">
-          <Link to="/doctors" style={{ fontWeight: 500, color: 'var(--text-muted)' }}>Find Doctors</Link>
+        <div className="desktopMenu">
+          <Link to="/doctors" className="navLink">Find Doctors</Link>
           {user ? (
             <>
-              <Link to="/dashboard" style={{ fontWeight: 500, color: 'var(--text-muted)' }}>Dashboard</Link>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid var(--glass-border)', paddingLeft: '24px' }}>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{user.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{user.role}</div>
+              <Link to="/dashboard" className="navLink">Dashboard</Link>
+              <div className="userSection">
+                <button onClick={toggleTheme} className="themeToggleBtn mr-2" title="Toggle Theme">
+                  {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                </button>
+                <div className="userInfo">
+                  <div className="userName">{user.name}</div>
+                  <div className="userRole">{user.role}</div>
                 </div>
-                <button onClick={handleLogout} className="btn" style={{ padding: '8px' }}>
-                  <LogOut size={20} color="var(--text-muted)" />
+                <button onClick={handleLogout} className="logoutBtn" title="Logout">
+                  <LogOut size={20} />
                 </button>
               </div>
             </>
           ) : (
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <Link to="/login" className="btn btn-outline">Login</Link>
+            <div className="authButtons">
+              <button onClick={toggleTheme} className="themeToggleBtn mr-2" title="Toggle Theme">
+                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              </button>
+              <Link to="/login" className="btn btn-outline border-slate-200 text-slate-600 hover:border-teal-600 hover:text-teal-600">Login</Link>
               <Link to="/register" className="btn btn-primary">Sign Up</Link>
             </div>
           )}
         </div>
+
+        {/* Mobile menu button */}
+        <div className="flex items-center gap-2 md:hidden">
+          <button onClick={toggleTheme} className="themeToggleBtn" title="Toggle Theme">
+            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+          <button className="mobileMenuBtn" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t dark:border-t-slate-800 animate-fade-in">
+          <div className="flex flex-col gap-4">
+            <Link to="/doctors" className="navLink py-2" onClick={() => setIsOpen(false)}>Find Doctors</Link>
+            {user ? (
+              <>
+                <Link to="/dashboard" className="navLink py-2" onClick={() => setIsOpen(false)}>Dashboard</Link>
+                <div className="flex items-center justify-between py-2 border-t dark:border-t-slate-800 mt-2 pt-4">
+                  <div>
+                    <div className="userName">{user.name}</div>
+                    <div className="userRole">{user.role}</div>
+                  </div>
+                  <button onClick={handleLogout} className="logoutBtn">
+                    <LogOut size={20} />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col gap-3 pt-2">
+                <Link to="/login" className="btn btn-outline w-full" onClick={() => setIsOpen(false)}>Login</Link>
+                <Link to="/register" className="btn btn-primary w-full" onClick={() => setIsOpen(false)}>Sign Up</Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

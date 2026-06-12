@@ -1,0 +1,49 @@
+@import "../index.css" reference;
+@reference "tailwindcss";
+.registerPage {
+  @apply min-h-[calc(100vh-var(--header-height))] flex items-center justify-center bg-[radial-gradient(circle_at_top_right,rgba(13,148,136,0.06),transparent),radial-gradient(circle_at_bottom_left,rgba(219,39,119,0.04),transparent)] p-8;
+}
+
+.registerCard {
+  @apply glass-card animate-fade-in p-10 w-full max-w-[520px] shadow-2xl;
+}
+
+.registerHeader {
+  @apply text-center mb-8;
+}
+
+.registerTitle {
+  @apply text-[2.5rem] font-extrabold mb-2 tracking-tight text-slate-800;
+}
+
+.registerSubtitle {
+  @apply text-slate-500 font-medium;
+}
+
+.errorBox {
+  @apply p-4 bg-red-500/10 text-red-500 rounded-xl mb-6 text-[0.9rem] text-center border border-red-500/20;
+}
+
+.inputFieldFocus .inputIcon {
+  @apply absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-all duration-200;
+}
+
+.inputFieldFocus:focus-within .inputIcon {
+  @apply text-teal-600 scale-110;
+}
+
+.inputFieldWithIcon {
+  @apply input-field !pl-12 hover:border-teal-500/30 transition-all;
+}
+
+.submitBtn {
+  @apply btn btn-primary w-full p-4 text-lg shadow-lg hover:shadow-teal-600/30 transition-all duration-300;
+}
+
+.registerFooter {
+  @apply text-center mt-8 text-slate-500 text-[0.95rem] font-medium;
+}
+
+.registerLink {
+  @apply text-teal-600 font-bold hover:underline transition-colors;
+}

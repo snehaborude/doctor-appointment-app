@@ -1,0 +1,207 @@
+@import "../index.css" reference;
+@reference "tailwindcss";
+
+.doctorsListPage {
+  @apply pt-24 pb-16 min-h-[calc(100vh-72px)];
+}
+
+.listHeader {
+  @apply mb-12 text-center max-w-2xl mx-auto;
+}
+
+.listTitle {
+  @apply text-5xl font-black mb-4 tracking-tight text-slate-800 dark:text-slate-100;
+}
+
+.listTitle .highlight {
+  @apply text-teal-600 bg-clip-text;
+}
+
+.listSubtitle {
+  @apply text-lg text-slate-500 dark:text-slate-400 font-medium;
+}
+
+/* Search and Filters */
+.searchFilterContainer {
+  @apply mb-12 flex flex-col gap-6;
+}
+
+.searchBox {
+  @apply relative max-w-xl mx-auto w-full;
+}
+
+.searchIcon {
+  @apply absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500;
+}
+
+.searchBox input {
+  @apply w-full py-4 pl-12 pr-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-800 dark:text-slate-100 outline-none text-base transition-all duration-300 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 shadow-sm;
+}
+
+.filterBadges {
+  @apply flex flex-wrap gap-2.5 justify-center;
+}
+
+.filterBadge {
+  @apply px-5 py-2.5 rounded-full text-sm font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm;
+}
+
+.filterBadge.active {
+  @apply bg-teal-600 border-teal-600 text-white shadow-[0_4px_12px_rgba(13,148,136,0.25)];
+}
+
+/* Loading & Empty States */
+.loadingSpinner {
+  @apply flex flex-col justify-center items-center py-24 gap-4 text-slate-500 dark:text-slate-400;
+}
+
+.spinner {
+  @apply w-12 h-12 border-4 border-slate-200 dark:border-slate-700 border-t-teal-500 rounded-full animate-spin;
+}
+
+.emptyState {
+  @apply text-center py-20 max-w-md mx-auto;
+}
+
+.emptyStateIcon {
+  @apply mx-auto mb-4 text-teal-500/65;
+}
+
+.emptyState h3 {
+  @apply text-2xl font-bold mb-2 text-slate-800 dark:text-slate-100;
+}
+
+.emptyState p {
+  @apply text-slate-500 dark:text-slate-400 font-medium;
+}
+
+/* Doctor Cards Grid */
+.doctorGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+}
+
+.doctorCard {
+  @apply glass-card p-6 border border-slate-100 dark:border-slate-700/60 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1 bg-white dark:bg-slate-800/40;
+}
+
+.doctorCardHeader {
+  @apply flex justify-between items-start mb-6;
+}
+
+.doctorAvatar {
+  @apply w-14 h-14 rounded-2xl bg-linear-to-br from-teal-600 to-teal-400 flex items-center justify-center shadow-md shadow-teal-600/20;
+}
+
+.avatarHeart {
+  @apply text-white fill-white/10;
+}
+
+.doctorMeta {
+  @apply flex flex-col items-end gap-2;
+}
+
+.specialtyBadge {
+  @apply py-1 px-3 rounded-lg text-xs font-bold bg-teal-500/10 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300;
+}
+
+.ratingContainer {
+  @apply flex items-center gap-1 text-sm font-bold text-slate-700 dark:text-slate-300;
+}
+
+.doctorCardBody {
+  @apply flex-1 mb-6;
+}
+
+.doctorName {
+  @apply text-2xl font-black mb-2 text-slate-800 dark:text-slate-100 tracking-tight;
+}
+
+.doctorBio {
+  @apply text-[0.95rem] text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed font-medium;
+}
+
+.doctorDetails {
+  @apply flex flex-col gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-700/60;
+}
+
+.detailItem {
+  @apply flex items-center gap-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300;
+}
+
+.detailItem svg {
+  @apply text-slate-400 dark:text-slate-500;
+}
+
+.doctorCardFooter {
+  @apply pt-4 border-t border-slate-100 dark:border-slate-700/60;
+}
+
+.bookBtn {
+  @apply btn btn-primary w-full py-3.5;
+}
+
+/* Booking Modal */
+.modalOverlay {
+  @apply fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4;
+}
+
+.bookingModal {
+  @apply relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto;
+}
+
+.closeModalBtn {
+  @apply absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer;
+}
+
+.modalHeader {
+  @apply mb-6;
+}
+
+.modalHeader h2 {
+  @apply text-3xl font-black mb-1 text-slate-800 dark:text-slate-100 tracking-tight;
+}
+
+.modalHeader p {
+  @apply text-slate-500 dark:text-slate-400;
+}
+
+.modalError {
+  @apply p-4 mb-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm font-semibold;
+}
+
+.bookingSuccessBox {
+  @apply text-center py-10 flex flex-col items-center gap-4;
+}
+
+.successIconContainer {
+  @apply w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-3xl font-black shadow-lg shadow-emerald-500/20 animate-[bounce_1s_infinite];
+}
+
+.bookingSuccessBox h3 {
+  @apply text-2xl font-black text-slate-800 dark:text-slate-100;
+}
+
+.bookingSuccessBox p {
+  @apply text-slate-500 dark:text-slate-400 font-medium;
+}
+
+/* Slots Grid */
+.slotsGrid {
+  @apply grid grid-cols-3 gap-3;
+}
+
+.slotBtn {
+  @apply py-3 px-1 rounded-xl text-sm font-semibold border border-slate-200 dark:border-slate-700 bg-transparent text-slate-600 dark:text-slate-300 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 dark:hover:bg-slate-800;
+}
+
+.slotBtn.selected {
+  @apply bg-teal-600 border-teal-600 text-white shadow-md shadow-teal-600/25;
+}
+
+.confirmBookingBtn {
+  @apply btn btn-primary w-full py-4 text-base font-bold;
+}
+
+.confirmBookingBtn:disabled {
+  @apply opacity-55 cursor-not-allowed transform-none hover:shadow-none;
+}

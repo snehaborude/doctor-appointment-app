@@ -1,0 +1,65 @@
+@import "../index.css" reference;
+@reference "tailwindcss";
+.navbar {
+  @apply sticky top-0 z-[1000] rounded-none border-t-0 border-x-0 glass-card shadow-sm transition-all duration-300;
+}
+
+.navbarWrapper {
+  @apply container h-[var(--header-height)] flex items-center justify-between mx-auto px-6;
+}
+
+.logo {
+  @apply flex items-center gap-3 transition-transform hover:scale-105;
+}
+
+.logoIcon {
+  @apply bg-teal-600 p-2 rounded-xl shadow-[0_4px_12px_rgba(13,148,136,0.3)] flex items-center justify-center;
+}
+
+.logoText {
+  @apply text-2xl font-extrabold tracking-tight text-slate-800 dark:text-white;
+}
+
+.logoHighlight {
+  @apply text-teal-600;
+}
+
+.desktopMenu {
+  @apply hidden md:flex items-center gap-8;
+}
+
+.navLink {
+  @apply font-medium text-slate-500 hover:text-teal-600 transition-colors duration-200;
+}
+
+.userSection {
+  @apply flex items-center gap-3 border-l border-white/20 pl-6 ml-2;
+}
+
+.userInfo {
+  @apply text-right hidden sm:block;
+}
+
+.userName {
+  @apply font-bold text-sm text-slate-800 dark:text-white;
+}
+
+.userRole {
+  @apply text-[11px] text-slate-400 uppercase tracking-wider font-semibold;
+}
+
+.logoutBtn {
+  @apply p-2 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all duration-200;
+}
+
+.authButtons {
+  @apply flex items-center gap-3;
+}
+
+.mobileMenuBtn {
+  @apply md:hidden p-2 text-slate-600;
+}
+
+.themeToggleBtn {
+  @apply p-2 rounded-xl text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 transition-all duration-200 cursor-pointer flex items-center justify-center;
+}
