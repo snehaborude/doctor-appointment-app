@@ -61,7 +61,7 @@ exports.createAppointment = async (req, res) => {
 exports.getPatientAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find({ patient: req.user._id })
-            .populate('doctor', 'name email')
+            .populate('doctor', 'name email avatar')
             .sort({ date: -1, timeSlot: -1 });
 
         // Retrieve Doctor Profiles for these appointments to add specialization & experience
@@ -104,7 +104,7 @@ exports.getPatientAppointments = async (req, res) => {
 exports.getDoctorAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find({ doctor: req.user._id })
-            .populate('patient', 'name email')
+            .populate('patient', 'name email avatar')
             .sort({ date: -1, timeSlot: -1 });
 
         res.status(200).json({

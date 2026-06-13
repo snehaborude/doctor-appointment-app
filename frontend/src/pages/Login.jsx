@@ -16,7 +16,6 @@ const Login = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-    
     const result = await login(email, password);
     if (result.success) {
       navigate('/dashboard');
@@ -27,27 +26,33 @@ const Login = () => {
   };
 
   return (
-    <div className="loginPage">
-      <div className="loginCard">
-        <div className="loginHeader">
-          <h2 className="loginTitle">Welcome Back</h2>
-          <p className="loginSubtitle">Sign in to manage your appointments</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 w-full max-w-md">
+
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
+          <p className="text-gray-500 mt-1 text-sm">Sign in to manage your appointments</p>
         </div>
 
+        {/* Error */}
         {error && (
-          <div className="errorBox">
+          <div className="bg-red-50 border border-red-200 text-red-600 text-sm text-center py-3 px-4 rounded-lg mb-5">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label className="input-label">Email Address</label>
-            <div className="relative inputFieldFocus">
-              <Mail size={18} className="inputIcon" />
-              <input 
-                type="email" 
-                className="inputFieldWithIcon" 
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+          {/* Email */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-gray-700">Email Address</label>
+            <div className="relative flex items-center">
+              <Mail size={16} className="absolute left-3 text-gray-400 pointer-events-none" />
+              <input
+                type="email"
+                className="auth-input w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white"
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -56,13 +61,14 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="input-group mb-8">
-            <label className="input-label">Password</label>
-            <div className="relative inputFieldFocus">
-              <Lock size={18} className="inputIcon" />
-              <input 
-                type="password" 
-                className="inputFieldWithIcon" 
+          {/* Password */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-gray-700">Password</label>
+            <div className="relative flex items-center">
+              <Lock size={16} className="absolute left-3 text-gray-400 pointer-events-none" />
+              <input
+                type="password"
+                className="auth-input w-full pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -71,15 +77,24 @@ const Login = () => {
             </div>
           </div>
 
-          <button type="submit" className="submitBtn" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (
-              <>Sign In <ArrowRight size={20} /></>
-            )}
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed mt-1 cursor-pointer border-0"
+          >
+            {isSubmitting
+              ? <Loader2 className="animate-spin" size={20} />
+              : <><span>Sign In</span> <ArrowRight size={18} /></>}
           </button>
         </form>
 
-        <p className="loginFooter">
-          Don't have an account? <Link to="/register" className="loginLink">Create account</Link>
+        {/* Footer */}
+        <p className="text-center text-sm text-gray-500 mt-5">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-teal-600 font-semibold hover:underline">
+            Create account
+          </Link>
         </p>
       </div>
     </div>

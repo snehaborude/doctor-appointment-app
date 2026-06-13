@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
         enum: ['patient', 'doctor', 'admin'],
         default: 'patient',
     },
+    avatar: {
+        type: String,
+        default: '',
+    },
     createdAt: {
         type: Date,
         default: Date.now,

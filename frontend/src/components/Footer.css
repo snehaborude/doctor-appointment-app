@@ -1,0 +1,115 @@
+/* ── Slim Footer ───────────────────────────────────────────── */
+.footer-slim {
+  background: #0f172a;
+  color: #94a3b8;
+  border-top: 1px solid #1e293b;
+  font-size: 13px;
+}
+
+/* Main row */
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Brand */
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #f8fafc;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.footer-brand span {
+  color: #2dd4bf;
+}
+.footer-brand-icon {
+  background: #0d9488;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Contact group */
+.footer-contacts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.footer-contact-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-contact-link:hover {
+  color: #2dd4bf;
+}
+.footer-location {
+  cursor: default;
+}
+.footer-divider-dot {
+  color: #334155;
+  font-size: 16px;
+  user-select: none;
+}
+
+/* Nav links */
+.footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.footer-nav a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.footer-nav a:hover {
+  color: #2dd4bf;
+}
+
+/* Bottom bar */
+.footer-bottom {
+  border-top: 1px solid #1e293b;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  color: #475569;
+  flex-wrap: wrap;
+}
+.footer-bottom-links {
+  display: flex;
+  gap: 14px;
+}
+.footer-bottom-links a {
+  color: #475569;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-bottom-links a:hover {
+  color: #2dd4bf;
+}

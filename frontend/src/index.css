@@ -1,130 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --primary: #0d9488;
-  --primary-light: #14b8a6;
-  --secondary: #db2777;
-  --accent: #06b6d4;
-  --background: #f0fdfa;
-  --surface: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --glass: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(13, 148, 136, 0.1);
-  --shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.04), 0 8px 10px -6px rgba(13, 148, 136, 0.04);
-  --shadow-lg: 0 20px 25px -5px rgba(13, 148, 136, 0.08), 0 8px 10px -6px rgba(13, 148, 136, 0.08);
-  --header-height: 72px;
-}
-
-[data-theme='dark'] {
-  --background: #060c0b;
-  --surface: #0e1a18;
-  --text-main: #e6f2f0;
-  --text-muted: #7ca39f;
-  --glass: rgba(14, 26, 24, 0.8);
-  --glass-border: rgba(20, 184, 166, 0.12);
-}
-
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: var(--background);
-  color: var(--text-main);
-  line-height: 1.5;
-  overflow-x: hidden;
-  transition: background-color 0.3s ease;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 700;
-}
-
-button, input, select, textarea {
-  font-family: inherit;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 a {
-  text-decoration: none;
   color: inherit;
-}
-
-@utility glass-card {
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-}
-
-@utility btn {
-  @apply py-[10px] px-6 rounded-xl font-semibold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 text-[0.95rem] border-none;
-}
-
-@utility btn-primary {
-  @apply bg-linear-to-br from-[var(--primary)] to-[var(--primary-light)] text-white shadow-[0_4px_15px_rgba(13,148,136,0.3)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(13,148,136,0.4)];
-}
-
-@utility btn-outline {
-  @apply bg-transparent border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/5;
-}
-
-@utility input-group {
-  @apply mb-5;
-}
-
-@utility input-label {
-  @apply block text-[0.9rem] font-medium mb-2 text-slate-500;
-}
-
-@utility input-field {
-  @apply w-full py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none transition-all duration-200 text-base focus:border-[var(--primary)] focus:ring-4 focus:ring-[var(--primary)]/10;
-}
-
-@utility animate-fade-in {
-  @apply animate-[fadeIn_0.6s_ease_forwards];
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Status Badges */
-@utility badge {
-  @apply inline-flex items-center gap-1.5 py-1 px-3.5 rounded-full text-xs font-semibold tracking-wide uppercase border;
-}
-
-@utility badge-pending {
-  @apply bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 dark:bg-amber-500/20;
-}
-
-@utility badge-approved {
-  @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 dark:bg-emerald-500/20;
-}
-
-@utility badge-rejected {
-  @apply bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 dark:bg-rose-500/20;
-}
-
-@utility badge-cancelled {
-  @apply bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20 dark:bg-slate-500/20;
-}
-
-@utility badge-completed {
-  @apply bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20 dark:bg-sky-500/20;
-}
-
-/* Layout Utilities */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+  text-decoration: none;
 }

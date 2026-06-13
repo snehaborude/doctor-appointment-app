@@ -1,49 +1,8 @@
-@import "../index.css" reference;
-@reference "tailwindcss";
-.loginPage {
-  @apply min-h-[calc(100vh-var(--header-height))] flex items-center justify-center bg-[radial-gradient(circle_at_top_right,rgba(13,148,136,0.06),transparent),radial-gradient(circle_at_bottom_left,rgba(219,39,119,0.04),transparent)];
-}
+/* Custom styles not easily handled by Tailwind */
 
-.loginCard {
-  @apply glass-card animate-fade-in p-10 w-full max-w-[420px] shadow-2xl;
-}
-
-.loginHeader {
-  @apply text-center mb-8;
-}
-
-.loginTitle {
-  @apply text-[2.5rem] font-extrabold mb-2 tracking-tight text-slate-800;
-}
-
-.loginSubtitle {
-  @apply text-slate-500 font-medium;
-}
-
-.errorBox {
-  @apply p-4 bg-red-500/10 text-red-500 rounded-xl mb-6 text-[0.9rem] text-center border border-red-500/20 animate-pulse;
-}
-
-.inputIcon {
-  @apply absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors;
-}
-
-.inputFieldFocus:focus-within .inputIcon {
-  @apply text-teal-600;
-}
-
-.inputFieldWithIcon {
-  @apply input-field !pl-12;
-}
-
-.submitBtn {
-  @apply btn btn-primary w-full p-4 text-lg shadow-lg hover:shadow-teal-600/30 transition-all duration-300;
-}
-
-.loginFooter {
-  @apply text-center mt-8 text-slate-500 text-[0.95rem] font-medium;
-}
-
-.loginLink {
-  @apply text-teal-600 font-bold hover:underline hover:text-teal-700 transition-colors;
+/* Input focus ring color override for teal */
+.auth-input:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
 }

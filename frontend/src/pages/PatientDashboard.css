@@ -1,6 +1,5 @@
 /* Custom styles not easily handled by Tailwind */
 
-/* Loading spinner */
 .spinner {
   width: 2rem;
   height: 2rem;
@@ -12,11 +11,4 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* Modal input focus */
-.modal-input:focus {
-  outline: none;
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
 }

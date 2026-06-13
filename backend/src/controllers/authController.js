@@ -1,5 +1,13 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const ImageKit = require('imagekit');
+
+const imagekit = new ImageKit({
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
+});
+
 
 const signToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -69,3 +77,55 @@ exports.login = async (req, res) => {
         });
     }
 };
+
+exports.getImageKitAuthParameters = (req, res) => {
+    try {
+        const authParams = imagekit.getAuthenticationParameters();
+        res.status(200).json({
+            success: true,
+            data: {
+                ...authParams,
+                publicKey: process.env.IMAGEKIT_PUBLIC_KEY
+            }
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+exports.updateMe = async (req, res) => {
+    try {
+        const { name, avatar } = req.body;
+        
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        
+        if (name) user.name = name;
+        if (avatar !== undefined) user.avatar = avatar;
+        
+        await user.save();
+        
+        user.password = undefined;
+        
+        res.status(200).json({
+            success: true,
+            data: {
+                user
+            }
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+

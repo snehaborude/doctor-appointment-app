@@ -10,7 +10,7 @@ exports.getAllDoctors = async (req, res) => {
             query.specialization = { $regex: specialization, $options: 'i' };
         }
         
-        let profiles = await DoctorProfile.find(query).populate('user', 'name email role');
+        let profiles = await DoctorProfile.find(query).populate('user', 'name email role avatar');
         
         // If there's a search term, filter by doctor's name
         if (search) {
@@ -35,7 +35,7 @@ exports.getAllDoctors = async (req, res) => {
 
 exports.getDoctorById = async (req, res) => {
     try {
-        const profile = await DoctorProfile.findOne({ user: req.params.id }).populate('user', 'name email role');
+        const profile = await DoctorProfile.findOne({ user: req.params.id }).populate('user', 'name email role avatar');
         
         if (!profile) {
             // Check if the user is a doctor but just doesn't have a profile yet
