@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const prescriptionRoutes = require('./routes/prescriptionRoutes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cors());
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/doctors', doctorRoutes);
 app.use('/api/v1/appointments', appointmentRoutes);
+app.use('/api/v1/prescriptions', prescriptionRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to Doctor Appointment System API' });

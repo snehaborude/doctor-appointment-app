@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
-import { Calendar, Clock, Check, X, CheckSquare, PlusCircle, Settings, Users, Sparkles } from 'lucide-react';
+import { Calendar, Clock, Check, X, CheckSquare, PlusCircle, Settings, Users, Sparkles, FileText, Upload, Trash2, Plus, Eye, Paperclip } from 'lucide-react';
 import './DoctorDashboard.css';
 import { getAvatarUrl } from '../utils/imageHelper';
 
@@ -32,6 +32,26 @@ const DoctorDashboard = () => {
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar || '');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+
+  // Prescription modal state
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [prescriptionAppointment, setPrescriptionAppointment] = useState(null);
+  const [prescriptionForm, setPrescriptionForm] = useState({
+    diagnosis: '',
+    medications: [{ name: '', dosage: '', frequency: '', duration: '', instructions: '' }],
+    labTests: [''],
+    followUpDate: '',
+    notes: '',
+  });
+  const [prescriptionAttachments, setPrescriptionAttachments] = useState([]);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
+  const [isSavingPrescription, setIsSavingPrescription] = useState(false);
+  const [prescriptionError, setPrescriptionError] = useState('');
+  const [prescriptionMap, setPrescriptionMap] = useState({}); // appointmentId -> prescription
+
+  // View prescription state
+  const [viewPrescription, setViewPrescription] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -115,6 +135,19 @@ const DoctorDashboard = () => {
       const pending = list.filter(a => a.status === 'pending').length;
       const completedCount = list.filter(a => a.status === 'completed').length;
       setStats({ bookings: list.length, pending, earnings: completedCount * (fees || 0) });
+
+      // Fetch prescriptions for completed appointments
+      const completedApps = list.filter(a => a.status === 'completed');
+      const prescMap = {};
+      for (const app of completedApps) {
+        try {
+          const { data: prescData } = await api.get(`/prescriptions/appointment/${app._id}`);
+          prescMap[app._id] = prescData.data.prescription;
+        } catch {
+          // No prescription for this appointment yet
+        }
+      }
+      setPrescriptionMap(prescMap);
     } catch (error) {
       console.error('Error fetching appointments:', error);
     } finally {
@@ -155,6 +188,155 @@ const DoctorDashboard = () => {
 
   const handleDayToggle = (day) => {
     setSelectedDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]);
+  };
+
+  // ——— Prescription Handlers ———
+
+  const openPrescriptionModal = (appointment) => {
+    setPrescriptionAppointment(appointment);
+    setPrescriptionForm({
+      diagnosis: '',
+      medications: [{ name: '', dosage: '', frequency: '', duration: '', instructions: '' }],
+      labTests: [''],
+      followUpDate: '',
+      notes: '',
+    });
+    setPrescriptionAttachments([]);
+    setPrescriptionError('');
+    setShowPrescriptionModal(true);
+  };
+
+  const closePrescriptionModal = () => {
+    setShowPrescriptionModal(false);
+    setPrescriptionAppointment(null);
+  };
+
+  const addMedication = () => {
+    setPrescriptionForm(prev => ({
+      ...prev,
+      medications: [...prev.medications, { name: '', dosage: '', frequency: '', duration: '', instructions: '' }],
+    }));
+  };
+
+  const removeMedication = (idx) => {
+    setPrescriptionForm(prev => ({
+      ...prev,
+      medications: prev.medications.filter((_, i) => i !== idx),
+    }));
+  };
+
+  const updateMedication = (idx, field, value) => {
+    setPrescriptionForm(prev => {
+      const meds = [...prev.medications];
+      meds[idx] = { ...meds[idx], [field]: value };
+      return { ...prev, medications: meds };
+    });
+  };
+
+  const addLabTest = () => {
+    setPrescriptionForm(prev => ({ ...prev, labTests: [...prev.labTests, ''] }));
+  };
+
+  const removeLabTest = (idx) => {
+    setPrescriptionForm(prev => ({ ...prev, labTests: prev.labTests.filter((_, i) => i !== idx) }));
+  };
+
+  const updateLabTest = (idx, value) => {
+    setPrescriptionForm(prev => {
+      const tests = [...prev.labTests];
+      tests[idx] = value;
+      return { ...prev, labTests: tests };
+    });
+  };
+
+  const handleAttachmentUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        setPrescriptionError(`File "${file.name}" exceeds 5MB limit`);
+        return;
+      }
+    }
+
+    setIsUploadingAttachment(true);
+    setPrescriptionError('');
+
+    try {
+      const { data: authParamsResponse } = await api.get('/auth/imagekit-auth');
+      const { signature, expire, token, publicKey } = authParamsResponse.data;
+
+      const uploaded = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('fileName', `prescription-${Date.now()}-${file.name}`);
+        formData.append('publicKey', publicKey);
+        formData.append('signature', signature);
+        formData.append('expire', expire);
+        formData.append('token', token);
+
+        const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) throw new Error(`Failed to upload ${file.name}`);
+        const result = await response.json();
+        uploaded.push({ url: result.url, name: file.name, type: file.type });
+      }
+
+      setPrescriptionAttachments(prev => [...prev, ...uploaded]);
+    } catch (error) {
+      setPrescriptionError(error.message || 'Failed to upload file(s)');
+    } finally {
+      setIsUploadingAttachment(false);
+    }
+  };
+
+  const removeAttachment = (idx) => {
+    setPrescriptionAttachments(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handlePrescriptionSubmit = async (e) => {
+    e.preventDefault();
+    if (!prescriptionForm.diagnosis.trim()) {
+      setPrescriptionError('Diagnosis is required');
+      return;
+    }
+    if (!prescriptionForm.medications.length || !prescriptionForm.medications[0].name.trim()) {
+      setPrescriptionError('At least one medication is required');
+      return;
+    }
+
+    setIsSavingPrescription(true);
+    setPrescriptionError('');
+
+    try {
+      const payload = {
+        appointmentId: prescriptionAppointment._id,
+        diagnosis: prescriptionForm.diagnosis,
+        medications: prescriptionForm.medications.filter(m => m.name.trim()),
+        labTests: prescriptionForm.labTests.filter(t => t.trim()),
+        attachments: prescriptionAttachments,
+        followUpDate: prescriptionForm.followUpDate || undefined,
+        notes: prescriptionForm.notes,
+      };
+
+      await api.post('/prescriptions', payload);
+      closePrescriptionModal();
+      fetchAppointments();
+    } catch (error) {
+      setPrescriptionError(error.response?.data?.message || 'Failed to save prescription');
+    } finally {
+      setIsSavingPrescription(false);
+    }
+  };
+
+  const openViewPrescription = (prescription) => {
+    setViewPrescription(prescription);
+    setShowViewModal(true);
   };
 
   const formatDate = (ds) =>
@@ -268,6 +450,25 @@ const DoctorDashboard = () => {
                         >
                           <CheckSquare size={13} /> Complete
                         </button>
+                      </div>
+                    )}
+                    {app.status === 'completed' && (
+                      <div className="flex gap-2 mt-3">
+                        {prescriptionMap[app._id] ? (
+                          <button
+                            onClick={() => openViewPrescription(prescriptionMap[app._id])}
+                            className="flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <Eye size={13} /> View Prescription
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => openPrescriptionModal(app)}
+                            className="flex items-center gap-1 text-xs text-purple-700 bg-purple-50 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          >
+                            <FileText size={13} /> Write Prescription
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -411,6 +612,269 @@ const DoctorDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* ——— Write Prescription Modal ——— */}
+      {showPrescriptionModal && (
+        <div className="modal-overlay" onClick={closePrescriptionModal}>
+          <div className="prescription-modal" onClick={e => e.stopPropagation()}>
+            <div className="prescription-modal-header">
+              <div>
+                <h2 className="text-lg font-bold text-gray-800">Write Prescription</h2>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  For {prescriptionAppointment?.patient?.name} — {formatDate(prescriptionAppointment?.date)}
+                </p>
+              </div>
+              <button onClick={closePrescriptionModal} className="modal-close-btn">
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handlePrescriptionSubmit} className="prescription-modal-body">
+              {prescriptionError && (
+                <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3">
+                  {prescriptionError}
+                </div>
+              )}
+
+              {/* Diagnosis */}
+              <div className="form-group">
+                <label className="form-label">Diagnosis *</label>
+                <textarea
+                  className="form-textarea"
+                  placeholder="Enter diagnosis summary..."
+                  value={prescriptionForm.diagnosis}
+                  onChange={e => setPrescriptionForm(prev => ({ ...prev, diagnosis: e.target.value }))}
+                  rows={2}
+                  required
+                />
+              </div>
+
+              {/* Medications */}
+              <div className="form-group">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Medications *</label>
+                  <button type="button" onClick={addMedication} className="add-btn">
+                    <Plus size={12} /> Add
+                  </button>
+                </div>
+                <div className="medications-list">
+                  {prescriptionForm.medications.map((med, idx) => (
+                    <div key={idx} className="medication-row">
+                      <div className="medication-row-header">
+                        <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Medicine {idx + 1}</span>
+                        {prescriptionForm.medications.length > 1 && (
+                          <button type="button" onClick={() => removeMedication(idx)} className="remove-btn">
+                            <Trash2 size={11} />
+                          </button>
+                        )}
+                      </div>
+                      <div className="medication-fields">
+                        <input type="text" placeholder="Medicine name" value={med.name}
+                          onChange={e => updateMedication(idx, 'name', e.target.value)} className="med-input" required />
+                        <input type="text" placeholder="Dosage (e.g., 500mg)" value={med.dosage}
+                          onChange={e => updateMedication(idx, 'dosage', e.target.value)} className="med-input" required />
+                        <input type="text" placeholder="Frequency (e.g., 2x/day)" value={med.frequency}
+                          onChange={e => updateMedication(idx, 'frequency', e.target.value)} className="med-input" required />
+                        <input type="text" placeholder="Duration (e.g., 7 days)" value={med.duration}
+                          onChange={e => updateMedication(idx, 'duration', e.target.value)} className="med-input" required />
+                      </div>
+                      <input type="text" placeholder="Special instructions (optional)" value={med.instructions}
+                        onChange={e => updateMedication(idx, 'instructions', e.target.value)} className="med-input med-instructions" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Lab Tests */}
+              <div className="form-group">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="form-label mb-0">Recommended Lab Tests</label>
+                  <button type="button" onClick={addLabTest} className="add-btn">
+                    <Plus size={12} /> Add
+                  </button>
+                </div>
+                {prescriptionForm.labTests.map((test, idx) => (
+                  <div key={idx} className="flex gap-2 mb-1.5">
+                    <input type="text" placeholder="e.g., Complete Blood Count" value={test}
+                      onChange={e => updateLabTest(idx, e.target.value)} className="med-input flex-1" />
+                    {prescriptionForm.labTests.length > 1 && (
+                      <button type="button" onClick={() => removeLabTest(idx)} className="remove-btn">
+                        <Trash2 size={11} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* File Uploads */}
+              <div className="form-group">
+                <label className="form-label">Attachments (Lab Reports, X-Rays, Scans)</label>
+                <div className="upload-zone">
+                  <label className="upload-zone-label">
+                    {isUploadingAttachment ? (
+                      <div className="flex items-center gap-2 text-blue-600">
+                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                        <span>Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload size={20} className="text-gray-400" />
+                        <span className="text-xs text-gray-500">Click to upload files (max 5MB each)</span>
+                        <span className="text-[10px] text-gray-400">JPG, PNG, PDF supported</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      multiple
+                      className="hidden"
+                      onChange={handleAttachmentUpload}
+                      disabled={isUploadingAttachment}
+                    />
+                  </label>
+                </div>
+                {prescriptionAttachments.length > 0 && (
+                  <div className="attachment-list">
+                    {prescriptionAttachments.map((att, idx) => (
+                      <div key={idx} className="attachment-item">
+                        <div className="flex items-center gap-2">
+                          <Paperclip size={12} className="text-gray-400" />
+                          <span className="text-xs text-gray-700 truncate max-w-[180px]">{att.name}</span>
+                        </div>
+                        <button type="button" onClick={() => removeAttachment(idx)} className="remove-btn">
+                          <X size={11} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Follow-up & Notes */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="form-group">
+                  <label className="form-label">Follow-up Date</label>
+                  <input type="date" className="med-input"
+                    value={prescriptionForm.followUpDate}
+                    onChange={e => setPrescriptionForm(prev => ({ ...prev, followUpDate: e.target.value }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Additional Notes</label>
+                  <input type="text" placeholder="Any extra notes..." className="med-input"
+                    value={prescriptionForm.notes}
+                    onChange={e => setPrescriptionForm(prev => ({ ...prev, notes: e.target.value }))} />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSavingPrescription}
+                className="w-full py-2.5 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm cursor-pointer border-0 mt-2"
+              >
+                {isSavingPrescription ? 'Saving Prescription...' : 'Save Prescription'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ——— View Prescription Modal ——— */}
+      {showViewModal && viewPrescription && (
+        <div className="modal-overlay" onClick={() => setShowViewModal(false)}>
+          <div className="prescription-modal view-mode" onClick={e => e.stopPropagation()}>
+            <div className="prescription-modal-header">
+              <div>
+                <h2 className="text-lg font-bold text-gray-800">Prescription Details</h2>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {viewPrescription.patient?.name} — {new Date(viewPrescription.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <button onClick={() => setShowViewModal(false)} className="modal-close-btn">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="prescription-modal-body">
+              <div className="view-section">
+                <h4 className="view-label">Diagnosis</h4>
+                <p className="view-value">{viewPrescription.diagnosis}</p>
+              </div>
+
+              <div className="view-section">
+                <h4 className="view-label">Medications</h4>
+                <div className="view-medications-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Medicine</th>
+                        <th>Dosage</th>
+                        <th>Frequency</th>
+                        <th>Duration</th>
+                        <th>Instructions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {viewPrescription.medications?.map((med, idx) => (
+                        <tr key={idx}>
+                          <td className="font-medium">{med.name}</td>
+                          <td>{med.dosage}</td>
+                          <td>{med.frequency}</td>
+                          <td>{med.duration}</td>
+                          <td className="text-gray-500">{med.instructions || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {viewPrescription.labTests?.length > 0 && viewPrescription.labTests[0] && (
+                <div className="view-section">
+                  <h4 className="view-label">Recommended Lab Tests</h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {viewPrescription.labTests.filter(t => t).map((test, idx) => (
+                      <span key={idx} className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full">
+                        {test}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {viewPrescription.attachments?.length > 0 && (
+                <div className="view-section">
+                  <h4 className="view-label">Attachments</h4>
+                  <div className="attachment-list">
+                    {viewPrescription.attachments.map((att, idx) => (
+                      <a key={idx} href={att.url} target="_blank" rel="noopener noreferrer" className="attachment-item clickable">
+                        <div className="flex items-center gap-2">
+                          <Paperclip size={12} className="text-gray-400" />
+                          <span className="text-xs text-blue-600 truncate max-w-[200px]">{att.name}</span>
+                        </div>
+                        <span className="text-[10px] text-gray-400 capitalize">{att.uploadedBy}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {viewPrescription.followUpDate && (
+                <div className="view-section">
+                  <h4 className="view-label">Follow-up Date</h4>
+                  <p className="view-value">{formatDate(viewPrescription.followUpDate)}</p>
+                </div>
+              )}
+
+              {viewPrescription.notes && (
+                <div className="view-section">
+                  <h4 className="view-label">Additional Notes</h4>
+                  <p className="view-value">{viewPrescription.notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
