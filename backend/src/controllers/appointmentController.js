@@ -1,10 +1,11 @@
 const Appointment = require('../models/Appointment');
 const DoctorProfile = require('../models/DoctorProfile');
 const User = require('../models/User');
+const AvailabilitySlot = require('../models/AvailabilitySlot');
 
 exports.createAppointment = async (req, res) => {
     try {
-        const { doctor, date, timeSlot, notes } = req.body;
+        const { doctor, date, timeSlot, slotId, notes } = req.body;
 
         // Verify doctor exists and has role doctor
         const doctorUser = await User.findOne({ _id: doctor, role: 'doctor' });
@@ -23,28 +24,56 @@ exports.createAppointment = async (req, res) => {
             });
         }
 
-        // Check if the slot is already booked for this doctor on this date
-        const existingAppointment = await Appointment.findOne({
-            doctor,
-            date: new Date(date),
-            timeSlot,
-            status: { $in: ['pending', 'approved'] }
-        });
+        let slot;
+        if (slotId) {
+            slot = await AvailabilitySlot.findById(slotId);
+        } else {
+            // Fallback: search by doctor, normalized date, and timeSlot
+            const d = new Date(date);
+            const normalizedDate = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+            // We can match slot where startTime or timeSlot matches
+            slot = await AvailabilitySlot.findOne({
+                doctor,
+                date: normalizedDate,
+                isBooked: false
+            });
+        }
 
-        if (existingAppointment) {
+        if (!slot) {
+            return res.status(400).json({
+                success: false,
+                message: 'This time slot is unavailable. Please select an available slot.',
+            });
+        }
+
+        if (slot.isBooked) {
             return res.status(400).json({
                 success: false,
                 message: 'This time slot is already booked. Please choose another slot.',
             });
         }
 
+        slot.isBooked = true;
+        await slot.save();
+
         const appointment = await Appointment.create({
             patient: req.user._id,
             doctor,
-            date: new Date(date),
-            timeSlot,
+            date: slot.date,
+            timeSlot: timeSlot || `${slot.startTime} - ${slot.endTime}`,
+            slot: slot._id,
             notes,
         });
+
+        // Notify the doctor
+        const notificationController = require('./notificationController');
+        await notificationController.createNotification(
+            doctor,
+            'New Appointment Booking Request',
+            `Patient ${req.user.name} has requested an appointment on ${new Date(slot.date).toLocaleDateString(undefined, {timeZone: 'UTC'})} at ${slot.startTime} - ${slot.endTime}.`,
+            'appointment',
+            `/appointments/${appointment._id}`
+        );
 
         res.status(201).json({
             success: true,
@@ -92,6 +121,49 @@ exports.getPatientAppointments = async (req, res) => {
             success: true,
             count: appointments.length,
             data: { appointments: appointmentsWithSpecs },
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+exports.getAppointmentById = async (req, res) => {
+    try {
+        const appointment = await Appointment.findById(req.params.id)
+            .populate('patient', 'name email role avatar')
+            .populate('doctor', 'name email role avatar');
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: 'Appointment not found',
+            });
+        }
+
+        // Check permissions: only doctor or patient of this appointment can view
+        const userId = req.user._id.toString();
+        if (appointment.patient._id.toString() !== userId && appointment.doctor._id.toString() !== userId && req.user.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'You do not have permission to view this appointment',
+            });
+        }
+
+        // Enrich with doctor profile details (fees, specialization)
+        const profile = await DoctorProfile.findOne({ user: appointment.doctor._id });
+        const appObj = appointment.toObject();
+        if (profile) {
+            appObj.doctor.specialization = profile.specialization;
+            appObj.doctor.experience = profile.experience;
+            appObj.doctor.fees = profile.fees;
+        }
+
+        res.status(200).json({
+            success: true,
+            data: { appointment: appObj },
         });
     } catch (error) {
         res.status(400).json({
@@ -164,6 +236,31 @@ exports.updateAppointmentStatus = async (req, res) => {
 
         appointment.status = status;
         await appointment.save();
+
+        // Release slot if cancelled or rejected
+        if (['cancelled', 'rejected'].includes(status) && appointment.slot) {
+            await AvailabilitySlot.findByIdAndUpdate(appointment.slot, { isBooked: false });
+        }
+
+        // Notify the appropriate recipient
+        const notificationController = require('./notificationController');
+        if (req.user.role === 'doctor') {
+            await notificationController.createNotification(
+                appointment.patient,
+                'Appointment Status Updated',
+                `Dr. ${req.user.name} has marked your appointment on ${new Date(appointment.date).toLocaleDateString(undefined, {timeZone: 'UTC'})} as ${status}.`,
+                'appointment',
+                `/appointments/${appointment._id}`
+            );
+        } else if (req.user.role === 'patient' && status === 'cancelled') {
+            await notificationController.createNotification(
+                appointment.doctor,
+                'Appointment Cancelled',
+                `Patient ${req.user.name} has cancelled their appointment scheduled for ${new Date(appointment.date).toLocaleDateString(undefined, {timeZone: 'UTC'})}.`,
+                'appointment',
+                `/appointments/${appointment._id}`
+            );
+        }
 
         res.status(200).json({
             success: true,

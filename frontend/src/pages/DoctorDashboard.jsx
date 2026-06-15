@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { Calendar, Clock, Check, X, CheckSquare, PlusCircle, Settings, Users, Sparkles, FileText, Upload, Trash2, Plus, Eye, Paperclip } from 'lucide-react';
@@ -12,7 +13,7 @@ const statusStyles = {
   approved:  'bg-green-100 text-green-800 border border-green-300',
   rejected:  'bg-red-100 text-red-800 border border-red-300',
   cancelled: 'bg-gray-100 text-gray-600 border border-gray-300',
-  completed: 'bg-blue-100 text-blue-800 border border-blue-300',
+  completed: 'bg-teal-100 text-teal-800 border border-teal-300',
 };
 
 const DoctorDashboard = () => {
@@ -349,11 +350,11 @@ const DoctorDashboard = () => {
       <div className="max-w-6xl mx-auto">
 
         {/* Welcome Banner */}
-        <div className="bg-blue-600 rounded-2xl p-6 mb-6 flex items-center justify-between text-white">
+        <div className="bg-teal-600 rounded-2xl p-6 mb-6 flex items-center justify-between text-white">
           <div>
             <span className="text-xs bg-white/20 px-3 py-1 rounded-full font-medium">Doctor Practice Portal</span>
             <h1 className="text-2xl font-bold mt-2">Welcome, Dr. {user?.name}!</h1>
-            <p className="text-blue-100 text-sm mt-1">Configure your specialties and manage appointments.</p>
+            <p className="text-teal-100 text-sm mt-1">Configure your specialties and manage appointments.</p>
           </div>
           <Sparkles size={70} className="opacity-20 hidden sm:block" />
         </div>
@@ -361,7 +362,7 @@ const DoctorDashboard = () => {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           {[
-            { icon: <Users size={20} />, label: 'Total Bookings', value: stats.bookings, color: 'text-blue-600 bg-blue-100' },
+            { icon: <Users size={20} />, label: 'Total Bookings', value: stats.bookings, color: 'text-teal-600 bg-teal-100' },
             { icon: <Clock size={20} />, label: 'Pending Actions', value: stats.pending, color: 'text-yellow-600 bg-yellow-100' },
             { icon: <span className="font-bold text-lg">$</span>, label: 'Est. Earnings', value: `$${stats.earnings}`, color: 'text-green-600 bg-green-100' },
           ].map((s) => (
@@ -403,18 +404,26 @@ const DoctorDashboard = () => {
                 {appointments.map((app) => (
                   <div key={app._id} className="px-6 py-4">
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-sm">
+                      <Link to={`/appointments/${app._id}`} className="flex items-center gap-3 no-underline group">
+                        <div className="w-9 h-9 bg-teal-100 text-teal-700 rounded-full flex items-center justify-center font-bold text-sm group-hover:scale-105 transition-transform">
                           {app.patient?.name?.[0] || 'P'}
                         </div>
                         <div>
-                          <div className="font-semibold text-gray-800 text-sm">{app.patient?.name}</div>
+                          <div className="font-semibold text-gray-800 text-sm group-hover:text-teal-600 transition-colors">{app.patient?.name}</div>
                           <div className="text-xs text-gray-400">{app.patient?.email}</div>
                         </div>
+                      </Link>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${statusStyles[app.status] || ''}`}>
+                          {app.status}
+                        </span>
+                        <Link
+                          to={`/appointments/${app._id}`}
+                          className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 border border-teal-200 hover:bg-teal-50 px-2.5 py-1 rounded-full transition-colors no-underline font-medium"
+                        >
+                          Details
+                        </Link>
                       </div>
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${statusStyles[app.status] || ''}`}>
-                        {app.status}
-                      </span>
                     </div>
 
                     <div className="flex gap-4 mt-2 text-xs text-gray-500">
@@ -430,13 +439,13 @@ const DoctorDashboard = () => {
                       <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => handleUpdateStatus(app._id, 'approved')}
-                          className="flex items-center gap-1 text-xs text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          className="flex items-center gap-1 text-xs text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer bg-transparent"
                         >
                           <Check size={13} /> Approve
                         </button>
                         <button
                           onClick={() => handleUpdateStatus(app._id, 'rejected')}
-                          className="flex items-center gap-1 text-xs text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          className="flex items-center gap-1 text-xs text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer bg-transparent"
                         >
                           <X size={13} /> Reject
                         </button>
@@ -446,7 +455,7 @@ const DoctorDashboard = () => {
                       <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => handleUpdateStatus(app._id, 'completed')}
-                          className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          className="flex items-center gap-1 text-xs text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer bg-transparent"
                         >
                           <CheckSquare size={13} /> Complete
                         </button>
@@ -455,19 +464,19 @@ const DoctorDashboard = () => {
                     {app.status === 'completed' && (
                       <div className="flex gap-2 mt-3">
                         {prescriptionMap[app._id] ? (
-                          <button
-                            onClick={() => openViewPrescription(prescriptionMap[app._id])}
-                            className="flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          <Link
+                            to={`/prescriptions/${prescriptionMap[app._id]._id}`}
+                            className="flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors no-underline font-medium"
                           >
                             <Eye size={13} /> View Prescription
-                          </button>
+                          </Link>
                         ) : (
-                          <button
-                            onClick={() => openPrescriptionModal(app)}
-                            className="flex items-center gap-1 text-xs text-purple-700 bg-purple-50 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          <Link
+                            to={`/prescriptions/new/${app._id}`}
+                            className="flex items-center gap-1 text-xs text-purple-700 bg-purple-50 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors no-underline font-medium"
                           >
                             <FileText size={13} /> Write Prescription
-                          </button>
+                          </Link>
                         )}
                       </div>
                     )}
@@ -485,8 +494,17 @@ const DoctorDashboard = () => {
             </div>
 
             <div className="p-6">
+              <div className="mb-6">
+                <Link
+                  to="/availability"
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-teal-600 text-white font-semibold rounded-xl text-sm hover:bg-teal-700 transition-colors shadow-sm shadow-teal-500/10 no-underline border-0"
+                >
+                  <Calendar size={16} /> Manage Availability Slots
+                </Link>
+              </div>
+
               {!profile && !loadingProfile && (
-                <div className="flex items-center gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2.5 mb-4">
+                <div className="flex items-center gap-2 text-xs text-teal-700 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2.5 mb-4">
                   <PlusCircle size={15} />
                   <span>Complete your profile so patients can find and book you.</span>
                 </div>
@@ -514,7 +532,7 @@ const DoctorDashboard = () => {
                       <img
                         src={getAvatarUrl(avatarUrl, specialization, 'doctor')}
                         alt="Doctor profile"
-                        className="w-24 h-24 rounded-full object-cover border-2 border-blue-500/20 shadow-sm"
+                        className="w-24 h-24 rounded-full object-cover border-2 border-teal-500/20 shadow-sm"
                       />
                       {isUploading && (
                         <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
@@ -523,7 +541,7 @@ const DoctorDashboard = () => {
                       )}
                     </div>
                     <div className="text-center">
-                      <label className="px-3.5 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-semibold cursor-pointer transition-colors border border-blue-200">
+                      <label className="px-3.5 py-1.5 bg-teal-50 text-teal-600 hover:bg-teal-100 rounded-lg text-xs font-semibold cursor-pointer transition-colors border border-teal-200">
                         {isUploading ? 'Uploading...' : 'Change Photo'}
                         <input
                           type="file"
@@ -588,8 +606,8 @@ const DoctorDashboard = () => {
                             onClick={() => handleDayToggle(day)}
                             className={`py-1.5 text-xs font-medium rounded-lg border transition-colors cursor-pointer ${
                               isSelected
-                                ? 'bg-blue-600 text-white border-blue-600'
-                                : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+                                ? 'bg-teal-600 text-white border-teal-600'
+                                : 'bg-white text-gray-600 border-gray-300 hover:border-teal-400'
                             }`}
                           >
                             {day.substring(0, 3)}
@@ -602,7 +620,7 @@ const DoctorDashboard = () => {
                   <button
                     type="submit"
                     disabled={isSavingProfile}
-                    className="w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm cursor-pointer border-0"
+                    className="w-full py-2.5 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed text-sm cursor-pointer border-0"
                   >
                     {isSavingProfile ? 'Saving...' : 'Save Profile Settings'}
                   </button>
@@ -712,8 +730,8 @@ const DoctorDashboard = () => {
                 <div className="upload-zone">
                   <label className="upload-zone-label">
                     {isUploadingAttachment ? (
-                      <div className="flex items-center gap-2 text-blue-600">
-                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                      <div className="flex items-center gap-2 text-teal-600">
+                        <div className="w-4 h-4 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
                         <span>Uploading...</span>
                       </div>
                     ) : (
@@ -833,7 +851,7 @@ const DoctorDashboard = () => {
                   <h4 className="view-label">Recommended Lab Tests</h4>
                   <div className="flex flex-wrap gap-1.5">
                     {viewPrescription.labTests.filter(t => t).map((test, idx) => (
-                      <span key={idx} className="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full">
+                      <span key={idx} className="text-xs bg-teal-50 text-teal-700 border border-teal-200 px-2.5 py-1 rounded-full">
                         {test}
                       </span>
                     ))}
@@ -849,7 +867,7 @@ const DoctorDashboard = () => {
                       <a key={idx} href={att.url} target="_blank" rel="noopener noreferrer" className="attachment-item clickable">
                         <div className="flex items-center gap-2">
                           <Paperclip size={12} className="text-gray-400" />
-                          <span className="text-xs text-blue-600 truncate max-w-[200px]">{att.name}</span>
+                          <span className="text-xs text-teal-600 truncate max-w-[200px]">{att.name}</span>
                         </div>
                         <span className="text-[10px] text-gray-400 capitalize">{att.uploadedBy}</span>
                       </a>

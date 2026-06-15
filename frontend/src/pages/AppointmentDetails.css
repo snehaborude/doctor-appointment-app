@@ -1,0 +1,13 @@
+/* Appointment Details Styles */
+.details-banner-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.details-action-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.details-action-btn:hover {
+    transform: translateY(-1px);
+}

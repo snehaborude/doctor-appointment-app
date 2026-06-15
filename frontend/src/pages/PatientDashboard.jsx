@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import { Calendar, Clock, XCircle, Heart, User, CheckCircle2, AlertCircle, FileText, Upload, Paperclip, ExternalLink } from 'lucide-react';
+import { Calendar, Clock, XCircle, Heart, User, CheckCircle2, AlertCircle, FileText, Upload, Paperclip, ExternalLink, ChevronRight } from 'lucide-react';
 import './PatientDashboard.css';
 import { getAvatarUrl } from '../utils/imageHelper';
 
@@ -202,17 +203,17 @@ const PatientDashboard = () => {
                 {appointments.map((app) => (
                   <div key={app._id} className="px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-gray-50/50 transition-colors">
                     {/* Doctor info */}
-                    <div className="flex items-center gap-3 flex-1">
+                    <Link to={`/appointments/${app._id}`} className="flex items-center gap-3 flex-1 no-underline group">
                       <img 
                         src={getAvatarUrl(app.doctor?.avatar, app.doctor?.specialization, 'doctor')} 
                         alt={app.doctor?.name} 
-                        className="w-10 h-10 rounded-full object-cover border border-gray-100 shadow-sm" 
+                        className="w-10 h-10 rounded-full object-cover border border-gray-100 shadow-sm transition-transform group-hover:scale-105" 
                       />
                       <div>
-                        <div className="font-semibold text-gray-800 text-sm">Dr. {app.doctor?.name}</div>
+                        <div className="font-semibold text-gray-800 text-sm group-hover:text-teal-600 transition-colors">Dr. {app.doctor?.name}</div>
                         <div className="text-xs text-gray-400">{app.doctor?.specialization}</div>
                       </div>
-                    </div>
+                    </Link>
 
                     {/* Date & Time */}
                     <div className="flex flex-col gap-1 text-xs text-gray-500">
@@ -230,6 +231,12 @@ const PatientDashboard = () => {
                       <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${statusStyles[app.status] || ''}`}>
                         {app.status}
                       </span>
+                      <Link
+                        to={`/appointments/${app._id}`}
+                        className="flex items-center gap-1 text-xs text-teal-600 hover:text-teal-700 border border-teal-200 hover:bg-teal-50 px-2.5 py-1 rounded-full transition-colors no-underline font-medium"
+                      >
+                        Details
+                      </Link>
                       {['pending', 'approved'].includes(app.status) && (
                         <button
                           onClick={() => handleCancelAppointment(app._id)}
@@ -275,11 +282,14 @@ const PatientDashboard = () => {
                       </div>
                     </div>
                     
-                    <div className="text-right text-xs text-gray-500">
+                    <div className="text-right text-xs text-gray-500 flex sm:flex-col items-end gap-1.5">
                       <div className="flex items-center gap-1 sm:justify-end font-medium text-gray-700">
                         <Calendar size={13} /> {formatDate(presc.appointment?.date)}
                       </div>
                       <div className="mt-0.5 text-gray-400">Time: {presc.appointment?.timeSlot}</div>
+                      <Link to={`/prescriptions/${presc._id}`} className="text-xs text-teal-600 font-bold hover:underline hover:text-teal-700 flex items-center gap-0.5 no-underline mt-1 bg-teal-50 px-2 py-1 rounded-lg">
+                        View Sheet <ChevronRight size={12} />
+                      </Link>
                     </div>
                   </div>
 

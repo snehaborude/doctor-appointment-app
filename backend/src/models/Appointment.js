@@ -24,6 +24,10 @@ const appointmentSchema = new mongoose.Schema({
         enum: ['pending', 'approved', 'rejected', 'cancelled', 'completed'],
         default: 'pending',
     },
+    slot: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AvailabilitySlot',
+    },
     notes: {
         type: String,
     },

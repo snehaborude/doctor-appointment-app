@@ -1,0 +1,8 @@
+/* Prescription History Styles */
+.prescription-list-item {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+}
+
+.prescription-list-item:hover {
+    transform: translateX(4px);
+}

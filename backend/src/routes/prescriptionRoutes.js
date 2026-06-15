@@ -8,8 +8,10 @@ const router = express.Router();
 router.use(protect);
 
 router.post('/', restrictTo('doctor'), prescriptionController.createPrescription);
+router.put('/:id', restrictTo('doctor'), prescriptionController.updatePrescription);
 router.get('/patient', restrictTo('patient'), prescriptionController.getPatientPrescriptions);
 router.get('/doctor', restrictTo('doctor'), prescriptionController.getDoctorPrescriptions);
+router.get('/:id', prescriptionController.getPrescriptionById);
 router.get('/appointment/:appointmentId', prescriptionController.getPrescriptionByAppointment);
 router.patch('/:id/attachments', prescriptionController.addAttachments);
 

@@ -1,0 +1,8 @@
+/* Prescription Form Styles */
+.medication-row-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input-focus {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}

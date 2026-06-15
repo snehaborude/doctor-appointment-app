@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -10,8 +11,15 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import About from './pages/About';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
-import { Stethoscope, HeartPulse, Brain, Bone, Baby, ShieldCheck, Star, Clock, Calendar, ArrowRight, Sparkles, Plus } from 'lucide-react';
+import AvailabilityManagement from './pages/AvailabilityManagement';
+import AppointmentHistory from './pages/AppointmentHistory';
+import AppointmentDetails from './pages/AppointmentDetails';
+import PrescriptionForm from './pages/PrescriptionForm';
+import PrescriptionHistory from './pages/PrescriptionHistory';
+import PrescriptionDetails from './pages/PrescriptionDetails';
+import { Stethoscope, HeartPulse, Brain, Bone, Baby, ShieldCheck, Star, Clock, Calendar, ArrowRight, Sparkles, Plus, ChevronLeft, ChevronRight, Activity, Droplet, Moon, Apple } from 'lucide-react';
 import heroImg from './assets/hero-doctors.png';
+import medicalHeroBanner from './assets/medical_hero_banner.png';
 import { getAvatarUrl } from './utils/imageHelper';
 
 const ProtectedRoute = ({ children }) => {
@@ -27,6 +35,71 @@ const ProtectedRoute = ({ children }) => {
 
 const Home = () => {
   const navigate = useNavigate();
+
+  // Slider State
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentTip, setCurrentTip] = useState(0);
+
+  const heroSlides = [
+    {
+      badge: "Healthcare Scheduling Made Easy",
+      title: <>Healthcare <span className="text-teal-400 font-extrabold relative">Simplified<span className="absolute left-0 bottom-1 w-full h-1 bg-teal-500/20 rounded-full -z-10"></span></span>.</> ,
+      desc: "Connect with premium, verified doctors and book your appointments in just a few clicks. Your health is our highest priority.",
+      image: medicalHeroBanner,
+      actionText: "Find a Doctor",
+      actionLink: "/doctors"
+    },
+    {
+      badge: "MERN Stack Medical Records",
+      title: <>Prescriptions <span className="text-indigo-400 font-extrabold relative">Redefined<span className="absolute left-0 bottom-1 w-full h-1 bg-indigo-500/20 rounded-full -z-10"></span></span>.</>,
+      desc: "Retrieve certified prescriptions, print clinical records, and attach medical files directly to your session dashboard.",
+      image: heroImg,
+      actionText: "Get Started Free",
+      actionLink: "/register"
+    }
+  ];
+
+  const healthyTips = [
+    {
+      category: "Heart Care",
+      icon: <HeartPulse className="text-red-500" size={32} />,
+      title: "Aim for 150 minutes of aerobic activity",
+      desc: "Brisk walking, cycling, or jogging keeps blood vessels flexible. Avoid processed sugars and get cholesterol checked annually.",
+      color: "from-red-50 to-rose-50/50 text-red-700 border-red-100",
+      accent: "bg-red-500"
+    },
+    {
+      category: "Cellular Hydration",
+      icon: <Droplet className="text-blue-500" size={32} />,
+      title: "Drink 3 liters of water daily",
+      desc: "Water maintains cellular detox, supports joint lubrication, and keeps energy levels high. Carry a reusable flask to track progress.",
+      color: "from-blue-50 to-cyan-50/50 text-blue-700 border-blue-100",
+      accent: "bg-blue-500"
+    },
+    {
+      category: "Mental Balance",
+      icon: <Activity className="text-purple-500" size={32} />,
+      title: "Practice 10 minutes of daily mindfulness",
+      desc: "Controlled deep breathing reduces cortisol levels, preventing chronic inflammation, improving cognitive focus and sleep.",
+      color: "from-purple-50 to-violet-50/50 text-purple-700 border-purple-100",
+      accent: "bg-purple-500"
+    },
+    {
+      category: "Rest & Sleep",
+      icon: <Moon className="text-amber-500" size={32} />,
+      title: "Prioritize 7-9 hours of deep rest",
+      desc: "Deep sleep allows neural tissue restoration. Avoid phone/laptop screens for at least 1 hour before bedtime to boost melatonin production.",
+      color: "from-amber-50 to-orange-50/50 text-amber-700 border-amber-100",
+      accent: "bg-amber-500"
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % heroSlides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   const specialties = [
     { name: 'General Physician', icon: <Stethoscope size={24} />, desc: 'For general health queries, fever, cold, checkups.', color: 'from-teal-500/10 to-teal-500/20 text-teal-600' },
@@ -55,38 +128,64 @@ const Home = () => {
   ];
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-white border-b border-gray-100 py-16 px-6 sm:py-24">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 text-teal-700 rounded-full font-semibold text-xs mb-6 border border-teal-100">
+    <div className="bg-gray-50 min-h-screen text-gray-800 font-sans">
+      {/* Fullscreen Slider Hero Section */}
+      <section className="relative overflow-hidden min-h-[calc(90vh-64px)] flex items-center justify-center py-20 px-6">
+        {/* Full Screen Background Image with Fade Transition */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={heroSlides[currentSlide].image} 
+            alt="Healthcare professionals background" 
+            className="w-full h-full object-cover filter brightness-[0.4] contrast-[1.05] transition-all duration-1000 ease-in-out" 
+          />
+          {/* Blend Gradients */}
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-955/80 via-slate-900/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-slate-950/30" />
+        </div>
+
+        <div className="max-w-6xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Glassmorphic Floating Panel for Text */}
+          <div className="lg:col-span-7 bg-slate-900/60 backdrop-blur-xl border border-white/10 p-8 sm:p-12 rounded-3xl shadow-2xl text-white max-w-xl animate-fade-in">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-500/20 text-teal-300 rounded-full font-bold text-xs mb-6 border border-teal-500/30 shadow-inner">
               <Sparkles size={12} className="animate-pulse" />
-              Healthcare Scheduling Made Easy
+              {heroSlides[currentSlide].badge}
             </div>
-            <h1 className="text-5xl sm:text-6xl font-bold text-gray-800 leading-tight mb-6 tracking-tight">
-              Healthcare <span className="text-teal-600 relative">Simplified<span className="absolute left-0 bottom-1 w-full h-1 bg-teal-200/60 rounded-full -z-10"></span></span>.
+            
+            <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight mb-5 tracking-tight transition-all duration-500">
+              {heroSlides[currentSlide].title}
             </h1>
-            <p className="text-gray-600 max-w-xl text-lg mb-10 leading-relaxed">
-              Connect with premium, verified doctors and book your appointments in just a few clicks. Your health is our highest priority.
+            
+            <p className="text-slate-200 text-sm sm:text-base mb-8 leading-relaxed transition-all duration-500">
+              {heroSlides[currentSlide].desc}
             </p>
-            <div className="flex flex-wrap gap-4">
+            
+            <div className="flex flex-wrap gap-4 items-center">
               <button
-                onClick={() => navigate('/doctors')}
-                className="px-8 py-3.5 bg-teal-600 text-white font-semibold rounded-xl hover:bg-teal-700 transition-all shadow-md shadow-teal-600/10 hover:shadow-lg hover:scale-[1.01] text-sm cursor-pointer border-0"
+                onClick={() => navigate(heroSlides[currentSlide].actionLink)}
+                className="px-7 py-3.5 bg-teal-500 hover:bg-teal-650 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-teal-500/25 hover:scale-[1.01] text-sm cursor-pointer border-0"
               >
-                Find a Doctor
+                {heroSlides[currentSlide].actionText}
               </button>
               <button
-                onClick={() => navigate('/register')}
-                className="px-8 py-3.5 border border-gray-300 text-gray-700 bg-white font-semibold rounded-xl hover:border-teal-500 hover:text-teal-600 transition-all text-sm cursor-pointer"
+                onClick={() => navigate('/about')}
+                className="px-7 py-3.5 border border-white/30 text-white bg-white/10 hover:bg-white/20 hover:border-white font-bold rounded-xl transition-all duration-300 text-sm cursor-pointer"
               >
-                Get Started
+                Learn More
               </button>
+
+              {/* Slider Dots */}
+              <div className="flex gap-2 ml-4">
+                {heroSlides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentSlide(i)}
+                    className={`w-2.5 h-2.5 rounded-full border-0 cursor-pointer transition-all duration-300 ${
+                      currentSlide === i ? 'bg-teal-400 scale-125 w-6' : 'bg-white/30 hover:bg-white/60'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="hidden lg:flex justify-end">
-            <img src={heroImg} alt="Healthcare professionals" className="w-full max-w-md rounded-3xl shadow-2xl shadow-teal-600/8 object-cover" />
           </div>
         </div>
       </section>
@@ -94,7 +193,7 @@ const Home = () => {
       {/* Specialties Section */}
       <section className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800">Browse by Specialty</h2>
+          <h2 className="text-3xl font-black text-slate-800">Browse by Specialty</h2>
           <p className="text-gray-500 text-sm mt-2">Find experienced doctors across different clinical fields</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -102,7 +201,7 @@ const Home = () => {
             <div
               key={spec.name}
               onClick={() => navigate(`/doctors?specialization=${encodeURIComponent(spec.name)}`)}
-              className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-teal-500/40 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
+              className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-teal-500/40 transition-all duration-300 cursor-pointer group flex flex-col justify-between"
             >
               <div>
                 <div className="w-14 h-14 rounded-2xl overflow-hidden mb-4 border border-gray-100 shadow-sm transition-transform group-hover:scale-110">
@@ -124,11 +223,66 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Interactive Healthy Tips Module */}
+      <section className="bg-slate-50 border-y border-gray-200/60 py-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="text-xs bg-teal-100 text-teal-800 px-3.5 py-1 rounded-full font-bold uppercase tracking-wider">Health Tips</span>
+            <h2 className="text-3xl font-black text-slate-800 mt-2">Wellness & Healthy Tips</h2>
+            <p className="text-gray-550 text-sm">Actionable advice from verified physicians for a healthier life.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Selection Column */}
+            <div className="lg:col-span-4 flex flex-col gap-3">
+              {healthyTips.map((tip, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentTip(idx)}
+                  className={`w-full p-4 text-left border rounded-xl font-bold text-sm cursor-pointer transition-all duration-300 flex items-center gap-3 ${
+                    currentTip === idx
+                      ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/10'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-teal-400 hover:bg-teal-50/10'
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${currentTip === idx ? 'bg-white' : 'bg-gray-400'}`} />
+                  {tip.category}
+                </button>
+              ))}
+            </div>
+
+            {/* Content Display Card */}
+            <div className="lg:col-span-8">
+              <div className={`p-8 sm:p-10 border rounded-3xl bg-gradient-to-br ${healthyTips[currentTip].color} shadow-sm transition-all duration-500`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md">
+                    {healthyTips[currentTip].icon}
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-white/60 px-3 py-1 rounded-full text-gray-700">
+                    Category: {healthyTips[currentTip].category}
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-slate-800 mt-6 leading-tight">
+                  {healthyTips[currentTip].title}
+                </h3>
+                <p className="text-gray-650 text-sm sm:text-base mt-4 leading-relaxed">
+                  {healthyTips[currentTip].desc}
+                </p>
+                <div className="mt-8 flex items-center gap-2.5 text-xs font-semibold text-slate-650">
+                  <Apple size={14} />
+                  <span>Verified Medical Advice</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Grid */}
-      <section className="bg-white border-y border-gray-100 py-16 px-6">
+      <section className="bg-white py-16 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feat) => (
-            <div key={feat.title} className="flex gap-4 items-start">
+            <div key={feat.title} className="flex gap-4 items-start bg-slate-50/50 p-5 rounded-2xl border border-gray-100 hover:shadow-sm transition-shadow">
               <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
                 {feat.icon}
               </div>
@@ -144,7 +298,7 @@ const Home = () => {
       {/* How it Works */}
       <section className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800">How It Works</h2>
+          <h2 className="text-3xl font-black text-gray-800">How It Works</h2>
           <p className="text-gray-500 text-sm mt-2">Get your clinical slots scheduled in three direct steps</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -219,28 +373,89 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/doctors" element={<DoctorsList />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardSelector />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-        <Footer />
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/doctors" element={<DoctorsList />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardSelector />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/availability"
+                element={
+                  <ProtectedRoute>
+                    <AvailabilityManagement />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/appointments/history"
+                element={
+                  <ProtectedRoute>
+                    <AppointmentHistory />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/appointments/:id"
+                element={
+                  <ProtectedRoute>
+                    <AppointmentDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/prescriptions"
+                element={
+                  <ProtectedRoute>
+                    <PrescriptionHistory />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/prescriptions/:id"
+                element={
+                  <ProtectedRoute>
+                    <PrescriptionDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/prescriptions/new/:appointmentId"
+                element={
+                  <ProtectedRoute>
+                    <PrescriptionForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/prescriptions/edit/:id"
+                element={
+                  <ProtectedRoute>
+                    <PrescriptionForm />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </Router>
     </AuthProvider>
   );
 }
 
 export default App;
+

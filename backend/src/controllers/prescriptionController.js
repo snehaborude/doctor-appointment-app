@@ -37,6 +37,16 @@ exports.createPrescription = async (req, res) => {
             notes,
         });
 
+        // Notify the patient
+        const notificationController = require('./notificationController');
+        await notificationController.createNotification(
+            appointment.patient,
+            'New Prescription Issued',
+            `Dr. ${req.user.name} has issued a new prescription for your consultation on ${new Date(appointment.date).toLocaleDateString(undefined, {timeZone: 'UTC'})}.`,
+            'prescription',
+            `/prescriptions/${prescription._id}`
+        );
+
         res.status(201).json({ success: true, data: { prescription } });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -142,6 +152,66 @@ exports.addAttachments = async (req, res) => {
         await prescription.save();
 
         res.status(200).json({ success: true, data: { prescription } });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// Edit a prescription (doctor only)
+exports.updatePrescription = async (req, res) => {
+    try {
+        const { diagnosis, medications, labTests, followUpDate, notes } = req.body;
+        const prescription = await Prescription.findById(req.params.id);
+
+        if (!prescription) {
+            return res.status(404).json({ success: false, message: 'Prescription not found' });
+        }
+
+        // Only the doctor who wrote it can update it
+        if (prescription.doctor.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'You can only edit your own prescriptions' });
+        }
+
+        prescription.diagnosis = diagnosis !== undefined ? diagnosis : prescription.diagnosis;
+        prescription.medications = medications !== undefined ? medications : prescription.medications;
+        prescription.labTests = labTests !== undefined ? labTests : prescription.labTests;
+        prescription.followUpDate = followUpDate !== undefined ? followUpDate : prescription.followUpDate;
+        prescription.notes = notes !== undefined ? notes : prescription.notes;
+
+        await prescription.save();
+
+        res.status(200).json({ success: true, data: { prescription } });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// Get prescription by ID
+exports.getPrescriptionById = async (req, res) => {
+    try {
+        const prescription = await Prescription.findById(req.params.id)
+            .populate('doctor', 'name email avatar')
+            .populate('patient', 'name email avatar')
+            .populate('appointment', 'date timeSlot');
+
+        if (!prescription) {
+            return res.status(404).json({ success: false, message: 'Prescription not found' });
+        }
+
+        // Only the doctor or patient of this prescription can view it
+        const userId = req.user._id.toString();
+        if (prescription.doctor._id.toString() !== userId && prescription.patient._id.toString() !== userId) {
+            return res.status(403).json({ success: false, message: 'You do not have access to this prescription' });
+        }
+
+        // Enrich with doctor specialization
+        const profile = await DoctorProfile.findOne({ user: prescription.doctor._id });
+        const prescObj = prescription.toObject();
+        if (profile) {
+            prescObj.doctor.specialization = profile.specialization;
+        }
+
+        res.status(200).json({ success: true, data: { prescription: prescObj } });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }

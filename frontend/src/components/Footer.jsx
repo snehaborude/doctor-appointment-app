@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, Phone, Mail, MapPin } from 'lucide-react';
+import { Activity, Phone, Mail, MapPin } from 'lucide-react';
 import './Footer.css';
 
 const Footer = () => {
@@ -9,8 +9,8 @@ const Footer = () => {
 
         {/* Brand */}
         <Link to="/" className="footer-brand">
-          <div className="footer-brand-icon">
-            <Heart size={14} color="white" fill="white" />
+          <div className="footer-brand-icon bg-gradient-to-br from-teal-500 to-teal-700">
+            <Activity size={14} color="white" />
           </div>
           Doc<span>Reserv</span>
         </Link>

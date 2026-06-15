@@ -23,8 +23,34 @@ const DoctorsList = () => {
   const [bookingError, setBookingError] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   useEffect(() => { fetchDoctors(); }, [selectedSpecialty]);
+
+  useEffect(() => {
+    if (selectedDoctor && bookingDate) {
+      fetchAvailableSlots();
+    } else {
+      setAvailableSlots([]);
+    }
+  }, [selectedDoctor, bookingDate]);
+
+  const fetchAvailableSlots = async () => {
+    if (!bookingDate) return;
+    setLoadingSlots(true);
+    setBookingSlot('');
+    try {
+      const { data } = await api.get(`/doctors/${selectedDoctor.user._id}/availability-slots?date=${bookingDate}`);
+      const slotsArray = Array.isArray(data?.data?.slots) ? data.data.slots : [];
+      setAvailableSlots(slotsArray);
+    } catch (error) {
+      console.error('Error fetching available slots:', error);
+      setAvailableSlots([]);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
 
   const fetchDoctors = async () => {
     setLoading(true);
@@ -50,15 +76,23 @@ const DoctorsList = () => {
     setSelectedDoctor(doctor);
     setBookingDate(''); setBookingSlot(''); setBookingNotes('');
     setBookingError(''); setBookingSuccess(false);
+    setAvailableSlots([]);
   };
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!bookingDate || !bookingSlot) { setBookingError('Please select both a date and a time slot.'); return; }
     setIsSubmitting(true); setBookingError('');
+
+    const matchedSlot = availableSlots.find(s => `${s.startTime} - ${s.endTime}` === bookingSlot);
+
     try {
       await api.post('/appointments', {
-        doctor: selectedDoctor.user._id, date: bookingDate, timeSlot: bookingSlot, notes: bookingNotes,
+        doctor: selectedDoctor.user._id,
+        date: bookingDate,
+        timeSlot: bookingSlot,
+        slotId: matchedSlot?._id,
+        notes: bookingNotes,
       });
       setBookingSuccess(true);
       setTimeout(() => { setSelectedDoctor(null); navigate('/dashboard'); }, 2000);
@@ -67,14 +101,6 @@ const DoctorsList = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const getAvailableSlots = () => {
-    if (!selectedDoctor || !bookingDate) return [];
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayName = dayNames[new Date(bookingDate).getDay()];
-    const dayConfig = selectedDoctor.availability?.find(a => a.day.toLowerCase() === dayName.toLowerCase());
-    return dayConfig?.slots?.length ? dayConfig.slots : DEFAULT_SLOTS;
   };
 
   return (
@@ -208,11 +234,11 @@ const DoctorsList = () => {
               </div>
             ) : (
               <form onSubmit={handleBookingSubmit} className="flex flex-col gap-4">
-                {bookingError && (
-                  <div className="bg-red-50 border border-red-200 text-red-600 text-sm py-2.5 px-3 rounded-lg">
-                    {bookingError}
-                  </div>
-                )}
+                 {bookingError && (
+                   <div className="bg-red-50 border border-red-200 text-red-600 text-sm py-2.5 px-3 rounded-lg">
+                     {typeof bookingError === 'object' ? (bookingError.message || JSON.stringify(bookingError)) : bookingError}
+                   </div>
+                 )}
 
                 {/* Date */}
                 <div className="flex flex-col gap-1">
@@ -229,30 +255,41 @@ const DoctorsList = () => {
                   />
                 </div>
 
-                {/* Slots */}
-                {bookingDate && (
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-1">
-                      <Clock size={14} /> Available Slots
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {getAvailableSlots().map((slot) => (
-                        <button
-                          key={slot}
-                          type="button"
-                          onClick={() => setBookingSlot(slot)}
-                          className={`py-2 text-xs font-medium rounded-lg border transition-colors cursor-pointer ${
-                            bookingSlot === slot
-                              ? 'bg-teal-600 text-white border-teal-600'
-                              : 'bg-white text-gray-600 border-gray-300 hover:border-teal-400'
-                          }`}
-                        >
-                          {slot}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                 {/* Slots */}
+                 {bookingDate && (
+                   <div className="flex flex-col gap-1">
+                     <label className="text-sm font-semibold text-gray-700 flex items-center gap-1">
+                       <Clock size={14} /> Available Slots
+                     </label>
+                     {loadingSlots ? (
+                       <div className="text-xs text-gray-400 italic py-2">Loading slots...</div>
+                     ) : availableSlots.length === 0 ? (
+                       <div className="text-xs text-red-500 font-semibold py-2">
+                         No available slots on this date. Please choose another date.
+                       </div>
+                     ) : (
+                       <div className="grid grid-cols-2 gap-2">
+                         {availableSlots.map((slot) => {
+                           const slotText = `${slot.startTime} - ${slot.endTime}`;
+                           return (
+                             <button
+                               key={slot._id}
+                               type="button"
+                               onClick={() => setBookingSlot(slotText)}
+                               className={`py-2 text-xs font-medium rounded-lg border transition-colors cursor-pointer ${
+                                 bookingSlot === slotText
+                                   ? 'bg-teal-600 text-white border-teal-600'
+                                   : 'bg-white text-gray-600 border-gray-300 hover:border-teal-400'
+                               }`}
+                             >
+                               {slotText}
+                             </button>
+                           );
+                         })}
+                       </div>
+                     )}
+                   </div>
+                 )}
 
                 {/* Notes */}
                 <div className="flex flex-col gap-1">

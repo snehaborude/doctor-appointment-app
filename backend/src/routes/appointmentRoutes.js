@@ -10,6 +10,7 @@ router.use(protect);
 router.post('/', restrictTo('patient'), appointmentController.createAppointment);
 router.get('/patient', restrictTo('patient'), appointmentController.getPatientAppointments);
 router.get('/doctor', restrictTo('doctor'), appointmentController.getDoctorAppointments);
+router.get('/:id', appointmentController.getAppointmentById);
 router.patch('/:id/status', appointmentController.updateAppointmentStatus);
 
 module.exports = router;

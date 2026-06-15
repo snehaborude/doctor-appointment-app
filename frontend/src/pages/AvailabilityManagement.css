@@ -1,0 +1,12 @@
+/* Availability Management Styles */
+.availability-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slot-item-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slot-item-hover:hover {
+    transform: translateY(-2px);
+}
