@@ -102,29 +102,30 @@ const Home = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800 font-sans">
-      {/* Immersive Full-Screen Hero Section */}
-      <section className="relative min-h-[calc(100vh-64px)] flex items-center justify-center lg:justify-start px-6 py-12 sm:px-12 lg:px-20 overflow-hidden border-b border-gray-150">
-        {/* Full Screen Bleed Background Image */}
-        <div className="absolute inset-0 z-0">
+      {/* Immersive Home Hero Section */}
+      <section className="relative min-h-[calc(100vh-64px)] flex flex-col-reverse lg:flex-row items-stretch overflow-hidden border-b border-gray-150 bg-gray-50">
+        
+        {/* Background Image: absolute on desktop, relative container on mobile */}
+        <div className="relative w-full lg:absolute lg:inset-0 lg:z-0 h-72 sm:h-96 lg:h-full overflow-hidden shrink-0">
           <img 
             src={medicalHeroBanner} 
             alt="Healthcare professionals background" 
-            className="w-full h-full object-cover filter brightness-[0.75] contrast-[1.05] object-[center_30%]" 
+            className="w-full h-full object-cover object-[center_25%] lg:object-[82%_center] filter brightness-[0.97] contrast-[1.03]" 
           />
-          {/* Linear gradient overlay for high contrast text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/60 to-transparent lg:block hidden" />
-          <div className="absolute inset-0 bg-slate-950/60 lg:hidden" />
+          {/* Subtle gradient overlay to fade to white/light-slate on the left for text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-50 via-gray-50/90 to-transparent lg:block hidden z-10 w-7/12" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent lg:hidden z-10" />
         </div>
         
-        {/* Elegant Floating Card on top of the image */}
-        <div className="relative z-10 w-full max-w-xl animate-fade-in">
-          <div className="bg-white/95 backdrop-blur-xl border border-white/50 p-8 sm:p-10 md:p-12 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300">
+        {/* Floating Card Container */}
+        <div className="relative z-20 w-full max-w-6xl mx-auto px-6 py-12 lg:py-0 flex items-center justify-start shrink-0">
+          <div className="w-full max-w-xl bg-white border border-gray-200 p-8 sm:p-10 md:p-12 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-350 animate-fade-in">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-50 text-teal-800 rounded-full font-bold text-xs mb-6 border border-teal-150 shadow-sm">
               <Sparkles size={12} className="text-teal-600 animate-pulse" />
               Healthcare Scheduling Made Easy
             </div>
             
-            <h1 className="text-3xl sm:text-4.5xl font-black text-slate-800 leading-tight mb-5 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-4.5xl font-black text-slate-800 leading-tight mb-5 tracking-tight">
               Healthcare <span className="text-teal-600 font-extrabold relative font-sans">Simplified<span className="absolute left-0 bottom-1 w-full h-1 bg-teal-200/60 rounded-full -z-10"></span></span>.
             </h1>
             
@@ -135,14 +136,14 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate('/doctors')}
-                className="flex-1 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-teal-500/10 hover:shadow-lg hover:scale-[1.01] text-sm cursor-pointer border-0 flex items-center justify-center gap-2"
+                className="flex-grow py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-all duration-350 shadow-md shadow-teal-500/10 hover:shadow-lg hover:scale-[1.01] text-sm cursor-pointer border-0 flex items-center justify-center gap-2"
               >
                 <span>Find a Doctor</span>
                 <ArrowRight size={15} />
               </button>
               <button
                 onClick={() => navigate('/about')}
-                className="flex-1 py-3.5 border border-gray-300 text-gray-700 bg-white/70 hover:bg-white/95 hover:border-teal-500 font-bold rounded-xl transition-all duration-300 text-sm cursor-pointer"
+                className="flex-grow py-3.5 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-teal-500 font-bold rounded-xl transition-all duration-350 text-sm cursor-pointer"
               >
                 Learn More
               </button>
