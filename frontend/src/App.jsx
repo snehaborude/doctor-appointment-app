@@ -102,52 +102,51 @@ const Home = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800 font-sans">
-      {/* Clean Split Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-teal-50/40 via-white to-indigo-50/30 border-b border-gray-150 py-16 px-6 sm:py-20 lg:py-24">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Column: Text Content */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left animate-fade-in">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-50 text-teal-700 rounded-full font-bold text-xs mb-6 border border-teal-100 shadow-sm">
+      {/* Immersive Full-Screen Hero Section */}
+      <section className="relative min-h-[calc(100vh-64px)] flex items-center justify-center lg:justify-start px-6 py-12 sm:px-12 lg:px-20 overflow-hidden border-b border-gray-150">
+        {/* Full Screen Bleed Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={medicalHeroBanner} 
+            alt="Healthcare professionals background" 
+            className="w-full h-full object-cover filter brightness-[0.75] contrast-[1.05] object-[center_30%]" 
+          />
+          {/* Linear gradient overlay for high contrast text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/60 to-transparent lg:block hidden" />
+          <div className="absolute inset-0 bg-slate-950/60 lg:hidden" />
+        </div>
+        
+        {/* Elegant Floating Card on top of the image */}
+        <div className="relative z-10 w-full max-w-xl animate-fade-in">
+          <div className="bg-white/95 backdrop-blur-xl border border-white/50 p-8 sm:p-10 md:p-12 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-50 text-teal-800 rounded-full font-bold text-xs mb-6 border border-teal-150 shadow-sm">
               <Sparkles size={12} className="text-teal-600 animate-pulse" />
               Healthcare Scheduling Made Easy
             </div>
             
-            <h1 className="text-4xl sm:text-5xl font-black text-slate-800 leading-tight mb-5 tracking-tight">
-              Healthcare <span className="text-teal-600 font-extrabold relative font-sans">Simplified<span className="absolute left-0 bottom-1 w-full h-1.5 bg-teal-200/60 rounded-full -z-10"></span></span>.
+            <h1 className="text-3xl sm:text-4.5xl font-black text-slate-800 leading-tight mb-5 tracking-tight">
+              Healthcare <span className="text-teal-600 font-extrabold relative font-sans">Simplified<span className="absolute left-0 bottom-1 w-full h-1 bg-teal-200/60 rounded-full -z-10"></span></span>.
             </h1>
             
-            <p className="text-gray-600 text-base sm:text-lg mb-8 leading-relaxed max-w-xl">
+            <p className="text-gray-650 text-sm sm:text-base mb-8 leading-relaxed">
               Connect with premium, verified doctors and book your appointments in just a few clicks. Your health is our highest priority.
             </p>
             
-            <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate('/doctors')}
-                className="px-7 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-teal-500/10 hover:shadow-lg hover:shadow-teal-500/20 hover:scale-[1.01] text-sm cursor-pointer border-0"
+                className="flex-1 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-teal-500/10 hover:shadow-lg hover:scale-[1.01] text-sm cursor-pointer border-0 flex items-center justify-center gap-2"
               >
-                Find a Doctor
+                <span>Find a Doctor</span>
+                <ArrowRight size={15} />
               </button>
               <button
                 onClick={() => navigate('/about')}
-                className="px-7 py-3.5 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-teal-500 font-bold rounded-xl transition-all duration-300 text-sm cursor-pointer"
+                className="flex-1 py-3.5 border border-gray-300 text-gray-700 bg-white/70 hover:bg-white/95 hover:border-teal-500 font-bold rounded-xl transition-all duration-300 text-sm cursor-pointer"
               >
                 Learn More
               </button>
             </div>
-          </div>
-
-          {/* Right Column: Static framed medical banner image */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
-            <div className="w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white bg-white p-2.5 hover:scale-[1.01] transition-transform duration-500">
-              <img 
-                src={medicalHeroBanner} 
-                alt="Healthcare Professionals Banner" 
-                className="w-full h-full rounded-2.5xl object-cover" 
-              />
-            </div>
-            {/* Ambient glows */}
-            <div className="absolute -z-10 -bottom-8 -left-8 w-40 h-40 bg-teal-200/30 rounded-full blur-3xl" />
-            <div className="absolute -z-10 -top-8 -right-8 w-40 h-40 bg-indigo-200/20 rounded-full blur-3xl" />
           </div>
         </div>
       </section>
@@ -335,9 +334,9 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="flex flex-col min-h-screen">
+        <div className="app-wrapper bg-gray-50">
           <Navbar />
-          <main className="flex-grow">
+          <main className="main-content">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
