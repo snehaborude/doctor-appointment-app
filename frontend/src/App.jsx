@@ -36,28 +36,8 @@ const ProtectedRoute = ({ children }) => {
 const Home = () => {
   const navigate = useNavigate();
 
-  // Slider State
-  const [currentSlide, setCurrentSlide] = useState(0);
+  // Tips State
   const [currentTip, setCurrentTip] = useState(0);
-
-  const heroSlides = [
-    {
-      badge: "Healthcare Scheduling Made Easy",
-      title: <>Healthcare <span className="text-teal-400 font-extrabold relative">Simplified<span className="absolute left-0 bottom-1 w-full h-1 bg-teal-500/20 rounded-full -z-10"></span></span>.</> ,
-      desc: "Connect with premium, verified doctors and book your appointments in just a few clicks. Your health is our highest priority.",
-      image: medicalHeroBanner,
-      actionText: "Find a Doctor",
-      actionLink: "/doctors"
-    },
-    {
-      badge: "MERN Stack Medical Records",
-      title: <>Prescriptions <span className="text-indigo-400 font-extrabold relative">Redefined<span className="absolute left-0 bottom-1 w-full h-1 bg-indigo-500/20 rounded-full -z-10"></span></span>.</>,
-      desc: "Retrieve certified prescriptions, print clinical records, and attach medical files directly to your session dashboard.",
-      image: heroImg,
-      actionText: "Get Started Free",
-      actionLink: "/register"
-    }
-  ];
 
   const healthyTips = [
     {
@@ -94,13 +74,6 @@ const Home = () => {
     }
   ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % heroSlides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
   const specialties = [
     { name: 'General Physician', icon: <Stethoscope size={24} />, desc: 'For general health queries, fever, cold, checkups.', color: 'from-teal-500/10 to-teal-500/20 text-teal-600' },
     { name: 'Cardiology', icon: <HeartPulse size={24} />, desc: 'For heart related health issues and monitoring.', color: 'from-red-500/10 to-red-500/20 text-red-600' },
@@ -129,63 +102,52 @@ const Home = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800 font-sans">
-      {/* Fullscreen Slider Hero Section */}
-      <section className="relative overflow-hidden min-h-[calc(90vh-64px)] flex items-center justify-center py-20 px-6">
-        {/* Full Screen Background Image with Fade Transition */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroSlides[currentSlide].image} 
-            alt="Healthcare professionals background" 
-            className="w-full h-full object-cover filter brightness-[0.4] contrast-[1.05] transition-all duration-1000 ease-in-out" 
-          />
-          {/* Blend Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-955/80 via-slate-900/40 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-slate-950/30" />
-        </div>
-
-        <div className="max-w-6xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Glassmorphic Floating Panel for Text */}
-          <div className="lg:col-span-7 bg-slate-900/60 backdrop-blur-xl border border-white/10 p-8 sm:p-12 rounded-3xl shadow-2xl text-white max-w-xl animate-fade-in">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-500/20 text-teal-300 rounded-full font-bold text-xs mb-6 border border-teal-500/30 shadow-inner">
-              <Sparkles size={12} className="animate-pulse" />
-              {heroSlides[currentSlide].badge}
+      {/* Clean Split Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-teal-50/40 via-white to-indigo-50/30 border-b border-gray-150 py-16 px-6 sm:py-20 lg:py-24">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Column: Text Content */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left animate-fade-in">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-50 text-teal-700 rounded-full font-bold text-xs mb-6 border border-teal-100 shadow-sm">
+              <Sparkles size={12} className="text-teal-600 animate-pulse" />
+              Healthcare Scheduling Made Easy
             </div>
             
-            <h1 className="text-3xl sm:text-5xl font-black text-white leading-tight mb-5 tracking-tight transition-all duration-500">
-              {heroSlides[currentSlide].title}
+            <h1 className="text-4xl sm:text-5xl font-black text-slate-800 leading-tight mb-5 tracking-tight">
+              Healthcare <span className="text-teal-600 font-extrabold relative font-sans">Simplified<span className="absolute left-0 bottom-1 w-full h-1.5 bg-teal-200/60 rounded-full -z-10"></span></span>.
             </h1>
             
-            <p className="text-slate-200 text-sm sm:text-base mb-8 leading-relaxed transition-all duration-500">
-              {heroSlides[currentSlide].desc}
+            <p className="text-gray-600 text-base sm:text-lg mb-8 leading-relaxed max-w-xl">
+              Connect with premium, verified doctors and book your appointments in just a few clicks. Your health is our highest priority.
             </p>
             
             <div className="flex flex-wrap gap-4 items-center">
               <button
-                onClick={() => navigate(heroSlides[currentSlide].actionLink)}
-                className="px-7 py-3.5 bg-teal-500 hover:bg-teal-650 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-teal-500/25 hover:scale-[1.01] text-sm cursor-pointer border-0"
+                onClick={() => navigate('/doctors')}
+                className="px-7 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-all duration-300 shadow-md shadow-teal-500/10 hover:shadow-lg hover:shadow-teal-500/20 hover:scale-[1.01] text-sm cursor-pointer border-0"
               >
-                {heroSlides[currentSlide].actionText}
+                Find a Doctor
               </button>
               <button
                 onClick={() => navigate('/about')}
-                className="px-7 py-3.5 border border-white/30 text-white bg-white/10 hover:bg-white/20 hover:border-white font-bold rounded-xl transition-all duration-300 text-sm cursor-pointer"
+                className="px-7 py-3.5 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-teal-500 font-bold rounded-xl transition-all duration-300 text-sm cursor-pointer"
               >
                 Learn More
               </button>
-
-              {/* Slider Dots */}
-              <div className="flex gap-2 ml-4">
-                {heroSlides.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentSlide(i)}
-                    className={`w-2.5 h-2.5 rounded-full border-0 cursor-pointer transition-all duration-300 ${
-                      currentSlide === i ? 'bg-teal-400 scale-125 w-6' : 'bg-white/30 hover:bg-white/60'
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
+          </div>
+
+          {/* Right Column: Static framed medical banner image */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end relative">
+            <div className="w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white bg-white p-2.5 hover:scale-[1.01] transition-transform duration-500">
+              <img 
+                src={medicalHeroBanner} 
+                alt="Healthcare Professionals Banner" 
+                className="w-full h-full rounded-2.5xl object-cover" 
+              />
+            </div>
+            {/* Ambient glows */}
+            <div className="absolute -z-10 -bottom-8 -left-8 w-40 h-40 bg-teal-200/30 rounded-full blur-3xl" />
+            <div className="absolute -z-10 -top-8 -right-8 w-40 h-40 bg-indigo-200/20 rounded-full blur-3xl" />
           </div>
         </div>
       </section>
