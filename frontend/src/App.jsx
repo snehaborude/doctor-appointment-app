@@ -19,7 +19,7 @@ import PrescriptionHistory from './pages/PrescriptionHistory';
 import PrescriptionDetails from './pages/PrescriptionDetails';
 import { Stethoscope, HeartPulse, Brain, Bone, Baby, ShieldCheck, Star, Clock, Calendar, ArrowRight, Sparkles, Plus, ChevronLeft, ChevronRight, Activity, Droplet, Moon, Apple } from 'lucide-react';
 import heroImg from './assets/hero-doctors.png';
-import medicalHeroBanner from './assets/medical_hero_banner.png';
+import medicalHeroBanner from './assets/realistic_doctors.png';
 import { getAvatarUrl } from './utils/imageHelper';
 
 const ProtectedRoute = ({ children }) => {
@@ -102,31 +102,19 @@ const Home = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800 font-sans">
-      {/* Immersive Home Hero Section */}
-      <section className="relative min-h-[calc(100vh-64px)] flex flex-col-reverse lg:flex-row items-stretch overflow-hidden border-b border-gray-150 bg-gray-50">
+      {/* Immersive Home Hero Section - Split Screen Grid Layout (Non-overlapping) */}
+      <section className="relative min-h-[calc(100vh-64px)] grid grid-cols-1 lg:grid-cols-12 items-stretch overflow-hidden border-b border-gray-150 bg-gray-50">
         
-        {/* Background Image: absolute on desktop, relative container on mobile */}
-        <div className="relative w-full lg:absolute lg:inset-0 lg:z-0 h-72 sm:h-96 lg:h-full overflow-hidden shrink-0">
-          <img 
-            src={medicalHeroBanner} 
-            alt="Healthcare professionals background" 
-            className="w-full h-full object-cover object-[center_25%] lg:object-[82%_center] filter brightness-[0.97] contrast-[1.03]" 
-          />
-          {/* Subtle gradient overlay to fade to white/light-slate on the left for text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-50 via-gray-50/90 to-transparent lg:block hidden z-10 w-7/12" />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent lg:hidden z-10" />
-        </div>
-        
-        {/* Floating Card Container */}
-        <div className="relative z-20 w-full max-w-6xl mx-auto px-6 py-12 lg:py-0 flex items-center justify-start shrink-0">
-          <div className="w-full max-w-xl bg-white border border-gray-200 p-8 sm:p-10 md:p-12 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-350 animate-fade-in">
+        {/* Left Column: Clean Solid White Card floating inside Light Slate panel */}
+        <div className="lg:col-span-6 flex items-center justify-center p-6 sm:p-12 md:p-16 bg-gray-50/50 relative z-10">
+          <div className="bg-white border border-gray-200 p-8 sm:p-10 md:p-12 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-350 max-w-xl w-full animate-fade-in">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-50 text-teal-800 rounded-full font-bold text-xs mb-6 border border-teal-150 shadow-sm">
               <Sparkles size={12} className="text-teal-600 animate-pulse" />
               Healthcare Scheduling Made Easy
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-4.5xl font-black text-slate-800 leading-tight mb-5 tracking-tight">
-              Healthcare <span className="text-teal-600 font-extrabold relative font-sans">Simplified<span className="absolute left-0 bottom-1 w-full h-1 bg-teal-200/60 rounded-full -z-10"></span></span>.
+              Healthcare <span className="text-teal-650 font-black relative font-sans">Simplified<span className="absolute left-0 bottom-1 w-full h-1 bg-teal-150 rounded-full -z-10"></span></span>.
             </h1>
             
             <p className="text-gray-650 text-sm sm:text-base mb-8 leading-relaxed">
@@ -149,6 +137,15 @@ const Home = () => {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Right Column: Full Screen Bleed Image */}
+        <div className="lg:col-span-6 relative h-80 sm:h-96 lg:h-auto min-h-[350px] lg:min-h-0 overflow-hidden">
+          <img 
+            src={medicalHeroBanner} 
+            alt="Healthcare professionals team" 
+            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02]" 
+          />
         </div>
       </section>
 
